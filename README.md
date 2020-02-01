@@ -1,4 +1,18 @@
 
+# https://github.com/coreybutler/node-windows
+
+npm install -g node-windows
+
+
+
+
+
+
+
+
+
+
+
 services.msc
 
 httpd.exe -k install -n "Apache HTTP Server"
