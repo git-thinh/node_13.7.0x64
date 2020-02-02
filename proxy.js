@@ -16,11 +16,16 @@ const _JOB = require('cron').CronJob;
 
 //----------------------------------------------------------------------------
 const _CACHE_STORE = require('./cache-singleton.js');
+_CACHE_STORE.on_ready = function () {
+    console.log('CACHE ENGINE running ...');
+};
+_CACHE_STORE.f_start();
+
 const _HTTP_STORE = require('./http-singleton.js');
-_HTTP_STORE.onReady = function () {
+_HTTP_STORE.on_ready = function () {
     console.log('HTTP SERVER running ...');
 };
-_HTTP_STORE.start(___PORT_API);
+_HTTP_STORE.f_start(___PORT_API, _CACHE_STORE);
 //----------------------------------------------------------------------------
 
 

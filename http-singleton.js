@@ -1,7 +1,8 @@
 ﻿let httpSingleton = function httpSingleton() {
     // Defining a var instead of this (works for variable & function) will create a private definition
     //--------------------------------------------------------------------------------------------
-    let onReady = function () { };
+    let _CACHE_STORE = null;
+    let on_ready = function () { };
     //--------------------------------------------------------------------------------------------
     const _PATH = require('path');
     const _HTTP_EXPRESS = require('express');
@@ -40,7 +41,9 @@
 
     //#endregion
 
-    this.start = function (port) {
+    this.f_start = function (port, _cache) {
+        _CACHE_STORE = _cache;
+
         _HTTP_SERVER.listen(port, this.onReady);
 
         _IO.on('connection', client => {

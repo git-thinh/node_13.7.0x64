@@ -1,39 +1,47 @@
 ﻿var cacheSingleton = function cacheSingleton() {
-	// Defining a var instead of this (works for variable & function) will create a private definition
+    //--------------------------------------------------------------------------------------------
+    const { Worker, MessageChannel } = require('worker_threads');
+    let on_ready = function () { };
 
-	const NodeCache = require("node-cache");
-	const myCache = new NodeCache();
+    const worker1 = new Worker('./cache-index.js', { workerData: { id: 1 } });
+    const cacheChannel1 = new MessageChannel();
+    const worker2 = new Worker('./cache-index.js', { workerData: { id: 2 } });
+    const cacheChannel2 = new MessageChannel();
 
-	var socketList = {};
+    let _ID_CURRENT = 1;
 
-	this.add = function (userId, socket) {
-		if (!socketList[userId]) {
-			socketList[userId] = socket;
-		}
-	};
+    //--------------------------------------------------------------------------------------------
+    this.thread_on_message = function (id, m) {
 
-	this.remove = function (userId) {
-		if (socketList[userId]) {
-			delete socketList[userId];
-		}
-	};
+    };
+    this.channel_on_message = function (id, m) {
 
-	this.getSocketList = function () {
-		return socketList;
-	};
+    };
+    this.f_send_message = function (m_) {
+        switch (_ID_CURRENT) {
+            case 1:
+                worker1.postMessage(m_);
+                break;
+            case 2:
+                worker2.postMessage(m_);
+                break;
+        }
+    };
+    this.f_start = function () {
+        worker1.on('message', (m_) => { this.thread_on_message(1, m_); });
+        worker1.postMessage({ cache_port: cacheChannel1.port1 }, [cacheChannel1.port1]);
+        cacheChannel1.port2.on('message', (m_) => { this.channel_on_message(1, m_); });
 
-	if (cacheSingleton.caller != cacheSingleton.getInstance) {
-		throw new Error("This object cannot be instanciated");
-	}
+        worker2.on('message', (m_) => { this.thread_on_message(2, m_); });
+        worker2.postMessage({ cache_port: cacheChannel2.port1 }, [cacheChannel2.port1]);
+        cacheChannel2.port2.on('message', (m_) => { this.channel_on_message(2, m_); });
+    };
+    //--------------------------------------------------------------------------------------------
 };
-
-/* ************************************************************************
-CLASS DEFINITION
-************************************************************************ */
 
 cacheSingleton.instance = null;
 cacheSingleton.getInstance = function () {
-	if (this.instance === null) this.instance = new cacheSingleton();
-	return this.instance;
+    if (this.instance === null) this.instance = new cacheSingleton();
+    return this.instance;
 };
 module.exports = cacheSingleton.getInstance();
