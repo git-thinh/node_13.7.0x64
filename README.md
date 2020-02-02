@@ -1,13 +1,14 @@
 
 # https://github.com/coreybutler/node-windows
 
-npm install node-windows dotenv mssql cron body-parser express web-push socket.io lodash node-fetch -S
+npm install node-windows dotenv node-cache mssql cron body-parser express web-push socket.io lodash node-fetch -S
 
 npm install -g node-windows
 npm install dotenv
 
 npm install web-push
 
+npm install node-cache --save
 npm install lodash --save
 npm install socket.io
 npm install node-fetch --save
