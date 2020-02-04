@@ -1,6 +1,35 @@
 ﻿let ___CACHE_DATA = {};
 let ___CACHE_INDEX = {};
 let ___CACHE_SETTING = {
+    connect_string: {
+        db_123: {
+            user: 'sa',
+            password: '',
+            server: '192.168.10.54',
+            database: 'POL_20191230',
+            connectionTimeout: 300000,
+            requestTimeout: 300000,
+            pool: {
+                idleTimeoutMillis: 300000,
+                max: 10
+            }
+        },
+        db_amz: {
+            user: 'mobile',
+            password: '',
+            server: '192.168.10.37',
+            database: 'Release_FB51_App',
+            connectionTimeout: 300000,
+            requestTimeout: 300000,
+            pool: {
+                idleTimeoutMillis: 300000,
+                max: 10
+            }
+        }
+    },
+    scripts: {
+        POL_CUSTOMER: "SELECT top 5000 * FROM mobile.pol_customer order by id desc"
+    },
     join_1_1: {
         TEST: {
             user_created_id: 'USER',

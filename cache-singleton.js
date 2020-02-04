@@ -73,6 +73,8 @@
         if (config_) {
             for (var key in config_) {
                 switch (key) {
+                    case 'scripts': 
+                    case 'connect_string': 
                     case 'join_1_1': 
                     case 'join_1_n': 
                     case 'full_text_search':
@@ -81,6 +83,10 @@
                 }
 
                 switch (key) {
+                    case 'scripts':
+                        break;
+                    case 'connect_string':
+                        break;
                     case 'join_1_1':
                         break;
                     case 'join_1_n':
