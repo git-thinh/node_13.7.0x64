@@ -1,9 +1,22 @@
 ﻿let httpSingleton = function httpSingleton() {
+    const $ = this;
+
     // Defining a var instead of this (works for variable & function) will create a private definition
     //--------------------------------------------------------------------------------------------
-    let _CACHE_STORE = null;
+    const ___log = (...agrs) => console.log('API: ', ...agrs);
+
+    //--------------------------------------------------------------------------------------------
+    let ADDRESS_PORT = { address: '127.0.0.1', port: 0 };
+
     let on_ready = function () { };
     //--------------------------------------------------------------------------------------------
+    const ___guid = function () {
+        return 'id-xxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    };
+
     const _PATH = require('path');
     const _HTTP_EXPRESS = require('express');
     const _HTTP_BODY_PARSER = require('body-parser');
@@ -11,14 +24,9 @@
 
     const _HTTP_SERVER = require('http').createServer(_HTTP_APP);
     const _IO = require('socket.io')(_HTTP_SERVER);
-    //--------------------------------------------------------------------------------------------
-    
-    const NodeCache = require("node-cache");
-    const myCache = new NodeCache();
-       
-    //#region [ API ]
-    
-    _HTTP_APP.use(_HTTP_EXPRESS.static(_PATH.join(__dirname, 'htdocs')));
+
+    //--------------------------------------------------------------------------------------------    
+    //_HTTP_APP.use(_HTTP_EXPRESS.static(_PATH.join(__dirname, 'htdocs')));
 
     _HTTP_APP.use(_HTTP_BODY_PARSER.json());
     _HTTP_APP.use((error, req, res, next) => {
@@ -33,18 +41,72 @@
 
     //--------------------------------------------------------------------------------------------
 
-    _HTTP_APP.get('/test', function (req, res) {
-        res.json({ ok: true, time: new Date() });
+    //#region [ API ]
+
+    _HTTP_APP.get('/', function (req, res) {
+        res.json($.INFO);
+    });
+    _HTTP_APP.get('/test-log', function (req, res) { 
+        const _self = $;
+        const s = _self.INFO.APP_NAME + ' Test LOG at ' + new Date().toLocaleString();
+        _self.LOG.info(s);
+        res.json({ ok: true, message: s });
     });
 
-    //--------------------------------------------------------------------------------------------
+    _HTTP_APP.get('/cache-setting', function (req, res) {
+        const _self = $;
+
+        const val = _self.CACHE_STORE.f_get___cache_setting();
+        //___log(val);
+
+        res.json(val);
+    });
+
+    _HTTP_APP.post('/cache-setting', function (req, res) {
+        const m_ = req.body;
+        //___log(m_);
+        const _self = $;
+
+        _self.CACHE_STORE.f_set___cache_setting(m_);
+
+        res.json(_self.CACHE_STORE.f_get___cache_setting());
+    });
+
+    _HTTP_APP.post('/api/cache-execute', function (req, res) {
+        //res.json({ ok: true, time: new Date() });
+
+    });
 
     //#endregion
 
-    this.f_start = function (port, _cache) {
-        _CACHE_STORE = _cache;
+    //--------------------------------------------------------------------------------------------
 
-        _HTTP_SERVER.listen(port, this.onReady);
+    this.f_response_message = function (m_) {
+        ___log(m_);
+
+        if (m_ && 'key___' in m_) {
+            const key = m.key___;
+            if (key) {
+                if (_RESPONSE.has(key)) {
+                    const res = _RESPONSE.get(key);
+                    res.json(m_);
+                    res.end();
+                    _RESPONSE.del(key);
+                }
+
+                if (_REQUEST.has(key)) _REQUEST.del(key);
+            }
+        }
+    };
+
+    this.f_start = function () {
+        const _self = this; 
+
+        _HTTP_SERVER.listen(0, '127.0.0.1', () => {
+            _self.ADDRESS_PORT = _HTTP_SERVER.address();
+            console.log('HTTP_API: ', _self.ADDRESS_PORT);
+            _self.on_ready(_self.ADDRESS_PORT);
+        });
 
         _IO.on('connection', client => {
             if (___CACHE_DONE == false) return;

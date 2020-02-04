@@ -8,6 +8,7 @@ let _CACHE_CHANNEL = null;
 let _MSG = [];
 let _STATE = 'NONE';
 let _BUSY = false;
+
 //--------------------------------------------------------------------------------------------
 parentPort.on('message', (m_) => {
     if (m_) {
@@ -31,9 +32,18 @@ parentPort.on('message', (m_) => {
 function cache___Start(m_) {
     _STATE = 'CACHING';
 
-
-
+    ___log(m_);
     _STATE = 'CACHE_READY';
+
+    _CACHE_CHANNEL.postMessage({
+        key___: m_.key___,
+        ok: true,
+        id: _ID,
+        state: _STATE,
+        is_busy: _BUSY,
+        command: m_.command,
+        data: null
+    });
 }
 
 //--------------------------------------------------------------------------------------------

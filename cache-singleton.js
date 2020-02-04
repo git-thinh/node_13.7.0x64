@@ -1,41 +1,114 @@
 ﻿var cacheSingleton = function cacheSingleton() {
+    const ___log = (...agrs) => console.log('CACHE: ', ...agrs);
+
+    const _FS = require('fs');
+    const _NET = require('net');
+    _NET.bytesWritten = Number.MAX_SAFE_INTEGER;
+    _NET.bufferSize = Number.MAX_SAFE_INTEGER;
     //--------------------------------------------------------------------------------------------
-    const { Worker, MessageChannel } = require('worker_threads');
     let on_ready = function () { };
+    let on_busy = function () { };
+     
+    //--------------------------------------------------------------------------------------------
+    let ADDRESS_PORT_INIT = { address: '127.0.0.1', port: 0 };
 
-    const worker1 = new Worker('./cache-index.js', { workerData: { id: 1 } });
-    const cacheChannel1 = new MessageChannel();
-    const worker2 = new Worker('./cache-index.js', { workerData: { id: 2 } });
-    const cacheChannel2 = new MessageChannel();
+    const _TCP_INIT = _NET.createServer((socket_) => {
+        const chunks_ = [];
 
-    let _ID_CURRENT = 1;
+        socket_.on('data', chunk => chunks_.push(chunk));
+        socket_.on('end', () => {
+            const file = Buffer.concat(chunks_);
+            // do what you want with it
+
+            console.log('client disconnected');
+        });
+
+        //socket_.on('data', (data) => { 
+        //    console.log(_NET.bufferSize, data.length);
+        //    socket_.end();
+        //});
+
+        // c.write('hello\r\n');        
+
+        socket_.pipe(socket_);
+    });
+    _TCP_INIT.on('error', (err) => {
+        throw err;
+    });
+    //--------------------------------------------------------------------------------------------
+    let ADDRESS_PORT_UPDATE = { address: '127.0.0.1', port: 0 };
+
+    const _TCP_UPDATE = _NET.createServer((socket_) => {
+        const chunks_ = [];
+
+        socket_.on('data', chunk => chunks_.push(chunk));
+        socket_.on('end', () => {
+            const file = Buffer.concat(chunks_);
+            // do what you want with it
+
+            console.log('client disconnected');
+        });
+
+        //socket_.on('data', (data) => { 
+        //    console.log(_NET.bufferSize, data.length);
+        //    socket_.end();
+        //});
+
+        // c.write('hello\r\n');        
+
+        socket_.pipe(socket_);
+    });
+    _TCP_UPDATE.on('error', (err) => {
+        throw err;
+    });
 
     //--------------------------------------------------------------------------------------------
-    this.thread_on_message = function (id, m) {
 
-    };
-    this.channel_on_message = function (id, m) {
+    //--------------------------------------------------------------------------------------------
+    this.f_get___cache_setting = function () { return this.CACHE_SETTING; };
+    this.f_set___cache_setting = (config_) => {
+        //___log(config_);
 
-    };
-    this.f_send_message = function (m_) {
-        switch (_ID_CURRENT) {
-            case 1:
-                worker1.postMessage(m_);
-                break;
-            case 2:
-                worker2.postMessage(m_);
-                break;
+        const _self = this;
+        if (config_) {
+            for (var key in config_) {
+                switch (key) {
+                    case 'join_1_1': 
+                    case 'join_1_n': 
+                    case 'full_text_search':
+                        _self.CACHE_SETTING[key] = config_[key];
+                        break;
+                }
+
+                switch (key) {
+                    case 'join_1_1':
+                        break;
+                    case 'join_1_n':
+                        break;
+                    case 'full_text_search':
+                        break;
+                }
+            }
         }
+        return _self.CACHE_SETTING;
     };
-    this.f_start = function () {
-        worker1.on('message', (m_) => { this.thread_on_message(1, m_); });
-        worker1.postMessage({ cache_port: cacheChannel1.port1 }, [cacheChannel1.port1]);
-        cacheChannel1.port2.on('message', (m_) => { this.channel_on_message(1, m_); });
 
-        worker2.on('message', (m_) => { this.thread_on_message(2, m_); });
-        worker2.postMessage({ cache_port: cacheChannel2.port1 }, [cacheChannel2.port1]);
-        cacheChannel2.port2.on('message', (m_) => { this.channel_on_message(2, m_); });
+    this.f_start = function () {
+        const _self = this;
+
+        _TCP_INIT.listen(0, '127.0.0.1', () => {
+            _self.ADDRESS_PORT_INIT = _TCP_INIT.address();
+            console.log('TCP_CACHE_INIT: ', _self.ADDRESS_PORT_INIT);
+
+            _TCP_UPDATE.listen(0, '127.0.0.1', () => {
+                _self.ADDRESS_PORT_UPDATE = _TCP_UPDATE.address();
+                console.log('TCP_CACHE_UPDATE: ', _self.ADDRESS_PORT_UPDATE);
+
+                _self.on_ready(_self.ADDRESS_PORT_INIT, _self.ADDRESS_PORT_UPDATE);
+            });
+        });
     };
+
     //--------------------------------------------------------------------------------------------
 };
 
