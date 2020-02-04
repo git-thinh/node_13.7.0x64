@@ -37,37 +37,36 @@ const ___INFO = {
 const _EVENT_LOGGER = require('node-windows').EventLogger;
 let _LOG = null;
 
-const log_window___init = function () {    
-    _LOG = new _EVENT_LOGGER(___INFO.APP_NAME);
-    _LOG.info(___INFO.APP_NAME + ': Starting at ' + new Date().toLocaleString() +
-        ' - HTTP_API: ' + ___INFO.HTTP_API.port + ', TCP_CACHE_INIT: ' + ___INFO.TCP_CACHE_INIT.port + ', TCP_CACHE_UPDATE: ' + ___INFO.TCP_CACHE_UPDATE.port);
-    //_LOG.warn('Watch out!');
-    //_LOG.error('Something went wrong.');
-};
 
 //----------------------------------------------------------------------------
 const _JOB = require('cron').CronJob;
 
 //----------------------------------------------------------------------------
 let _CACHE_STORE = require('./cache-singleton.js');
+let _HTTP_STORE = require('./http-singleton.js');
+
 _CACHE_STORE.CACHE_DATA = ___CACHE_DATA;
 _CACHE_STORE.CACHE_INDEX = ___CACHE_INDEX;
 _CACHE_STORE.CACHE_SETTING = ___CACHE_SETTING;
 
-let _HTTP_STORE = require('./http-singleton.js');
+_CACHE_STORE.INFO = ___INFO;
+_CACHE_STORE.HTTP_STORE = _HTTP_STORE;
+
+_HTTP_STORE.INFO = ___INFO;
+_HTTP_STORE.CACHE_STORE = _CACHE_STORE;
 
 _CACHE_STORE.on_ready = function (add_port_init, add_port_update) {
     ___INFO.TCP_CACHE_INIT = add_port_init;
     ___INFO.TCP_CACHE_UPDATE = add_port_update;
 
-    log_window___init();
+    // Setup LOG on windows Events Viewer
+    _LOG = new _EVENT_LOGGER(___INFO.APP_NAME);
+    _LOG.info(___INFO.APP_NAME + ': Starting at ' + new Date().toLocaleString() +
+        ' - HTTP_API: ' + ___INFO.HTTP_API.port + ', TCP_CACHE_INIT: ' + ___INFO.TCP_CACHE_INIT.port + ', TCP_CACHE_UPDATE: ' + ___INFO.TCP_CACHE_UPDATE.port);
+    //_LOG.warn('Watch out!');
+    //_LOG.error('Something went wrong.');
     _CACHE_STORE.LOG = _LOG;
     _HTTP_STORE.LOG = _LOG;
-    _CACHE_STORE.INFO = ___INFO;
-    _HTTP_STORE.INFO = ___INFO;
-
-    _CACHE_STORE.HTTP_STORE = _HTTP_STORE;
-    _HTTP_STORE.CACHE_STORE = _CACHE_STORE;
 };
 _CACHE_STORE.on_busy = function (state_) {
     console.log('CACHE ENGINE is busy: ', state_);
