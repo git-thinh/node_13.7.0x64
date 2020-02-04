@@ -73,7 +73,10 @@
         if (config_) {
             for (var key in config_) {
                 switch (key) {
-                    case 'scripts': 
+                    case 'valid': 
+                    case 'caption': 
+                    case 'plugin': 
+                    case 'script': 
                     case 'connect_string': 
                     case 'join_1_1': 
                     case 'join_1_n': 
@@ -83,7 +86,13 @@
                 }
 
                 switch (key) {
-                    case 'scripts':
+                    case 'valid':
+                        break;
+                    case 'caption':
+                        break;
+                    case 'plugin':
+                        break;
+                    case 'script':
                         break;
                     case 'connect_string':
                         break;

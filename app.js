@@ -1,6 +1,6 @@
-﻿let ___CACHE_DATA = {};
-let ___CACHE_INDEX = {};
-let ___CACHE_SETTING = {
+﻿const ___CACHE_DATA = {};
+const ___CACHE_INDEX = {};
+const ___CACHE_SETTING = {
     connect_string: {
         db_123: {
             user: 'sa',
@@ -44,7 +44,7 @@ let ___CACHE_SETTING = {
             scripts: ["GROUP", "POS_SYS_CONFIG", "SHOP", "REGION", "USER"]
         }
     },
-    scripts: {
+    script: {
         POL_PAWN: "SELECT top 5000 *,isnull( (select * from [SplitStringToTable](str_url,'&')),'') as str_campaign FROM mobile.pol_pawn order by id desc",
         POL_CUSTOMER: "SELECT top 5000 * FROM mobile.pol_customer order by id desc",
         POL_PROCESS: "SELECT top 5000 * FROM mobile.pol_online_process order by int_pol_pawn_id desc",
@@ -88,6 +88,21 @@ let ___CACHE_SETTING = {
             utf8: ',str_asset_type_name,str_channel_name,str_city_name,str_district_name,str_description,str_trademark,',
             org: ',str_asset_type_name,'
         }
+    },
+    valid: {},
+    caption: {},
+    plugin: {
+        pol_pawn___addnew: {
+            data: {},
+            valid: {},
+            command: ''
+        },
+        pol_pawn___update: {},
+        pol_pawn___remove: {},
+        pol_customer___addnew: {},
+        pol_process___addnew: {},
+        pol_channel___addnew: {},
+        pol_notify___addnew: {}
     }
 };
 
@@ -100,7 +115,6 @@ const ___INFO = {
 //----------------------------------------------------------------------------
 const _EVENT_LOGGER = require('node-windows').EventLogger;
 let _LOG = null;
-
 
 //----------------------------------------------------------------------------
 const _JOB = require('cron').CronJob;
