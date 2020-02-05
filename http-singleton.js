@@ -1,4 +1,6 @@
 ﻿let httpSingleton = function httpSingleton() {
+    const PORT = 12345;
+
     const $ = this;
 
     // Defining a var instead of this (works for variable & function) will create a private definition
@@ -7,7 +9,7 @@
 
     //--------------------------------------------------------------------------------------------
     let ADDRESS_PORT = { address: '127.0.0.1', port: 0 };
-     
+
     //--------------------------------------------------------------------------------------------
     const ___guid = function () {
         return 'id-xxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -45,23 +47,25 @@
     _HTTP_APP.get('/', function (req, res) {
         res.json($.INFO);
     });
-    _HTTP_APP.get('/test-log', function (req, res) {  
+    _HTTP_APP.get('/test-log', function (req, res) {
         const s = $.INFO.APP_NAME + ' Test LOG at ' + new Date().toLocaleString();
         $.LOG.info(s);
         res.json({ ok: true, message: s });
     });
     _HTTP_APP.get('/raw/:cache_name', function (req, res) {
         const api = req.params.cache_name;
-        if (api) {
-            const cache_name = api.toUpperCase(); 
-            const val = $.CACHE_STORE.f_get___test(cache_name);
-            res.json(val);
-        } else {
-            res.json([]);
-        }
+        let a = [];
+        if (api) a = $.CACHE_STORE.f_get___test('RAW', api.toUpperCase());
+        res.json(a);
+    });
+    _HTTP_APP.get('/ext/:cache_name', function (req, res) {
+        const api = req.params.cache_name;
+        let a = [];
+        if (api) a = $.CACHE_STORE.f_get___test('EXT', api.toUpperCase());
+        res.json(a);
     });
 
-    _HTTP_APP.get('/cache-setting', function (req, res) { 
+    _HTTP_APP.get('/cache-setting', function (req, res) {
 
         const val = $.CACHE_STORE.f_get___cache_setting();
         //___log(val);
@@ -111,7 +115,7 @@
 
     this.f_start = function () {
 
-        _HTTP_SERVER.listen(0, '127.0.0.1', () => {
+        _HTTP_SERVER.listen(PORT, '127.0.0.1', () => {
             $.ADDRESS_PORT = _HTTP_SERVER.address();
             console.log('HTTP_API: ', $.ADDRESS_PORT);
             on_ready($.ADDRESS_PORT);
