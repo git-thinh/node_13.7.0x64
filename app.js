@@ -69,12 +69,12 @@ const ___CACHE_SETTING = {
     },
     join_1_1: {
         POL_PAWN: {
-            user_created_id: 'USER',
-            cus_created_id: 'POL_CUSTOMER',
-            customer_id: 'POL_CUSTOMER',
-            caller_shop_id: 'USER',
-            caller_online_id: 'USER',
-            group_id: 'GROUP'
+            user_created_id: { name: 'USER', alias: 'user_created' },
+            cus_created_id: { name: 'POL_CUSTOMER', alias: 'cus_created' },
+            customer_id: { name: 'POL_CUSTOMER', alias: 'customer' },
+            caller_shop_id: { name: 'USER', alias: 'caller_shop' },
+            caller_online_id: { name: 'USER', alias: 'caller_online' },
+            group_id: { name: 'GROUP', alias: 'group' }
         }
     },
     join_1_n: {
@@ -179,7 +179,7 @@ const ___CACHE_SETTING = {
                 int_time_create: 'HHMMSS',
                 ___i: 0
             },
-            valid: { 
+            valid: {
                 str_call_out_tooken: [
                     { name: 'NOT_EMPTY', config: [] }
                 ],
@@ -206,7 +206,7 @@ const ___CACHE_SETTING = {
             },
             command: [
                 {
-                    name: 'notify___pushqueue', 
+                    name: 'notify___pushqueue',
                     config: {}
                 }
             ]

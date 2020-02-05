@@ -3,7 +3,7 @@
 node --max-old-space-size=4096 app.js
 node --max-old-space-size=4096 db2txt.js
 
-txt2tcp.exe 12345
+txt2tcp.exe 1000
 
 # https://github.com/coreybutler/node-windows
 

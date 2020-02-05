@@ -280,6 +280,7 @@
         //const full_text_search = { USER: setting.full_text_search['USER'] };
         const raw = $.CACHE_DATA_RAW;
         const ext = $.CACHE_DATA_EXT;
+        const inx = $.CACHE_INDEX;
 
         if (raw && ext) {
             let i = 0, r, cf, a = [], ex = [], x;
@@ -288,20 +289,23 @@
             if (master_name) cache_names.push(master_name);
 
             cache_names.forEach((cache_name) => {
-
+                inx[cache_name] = {};
                 cf = full_text_search[cache_name];
                 a = raw[cache_name];
                 ex = [];
 
                 if (cf && a && a.length > 0) {
-                    let join_1_1, join_1_n, col_11 = [], api_11 = [];
+                    let join_1_1, join_1_n, col_11 = [], api_11 = [], alias_11 = [];
+                    let has_join_11 = false;
 
                     if (master_name && cache_name == master_name) {
                         if (setting.join_1_1) join_1_1 = setting.join_1_1[master_name];
                         if (setting.join_1_n) join_1_n = setting.join_1_n[master_name];
                         if (join_1_1) {
                             col_11 = Object.keys(join_1_1);
-                            api_11 = Object.values(join_1_1);
+                            api_11 = Object.values(join_1_1).map((o_) => { return o_.name; });
+                            alias_11 = Object.values(join_1_1).map((o_) => { return o_.alias; });
+                            has_join_11 = col_11.length == api_11.length == alias_11.length;
                         }
                     }
 
@@ -315,7 +319,9 @@
 
                     for (i = 0; i < a.length; i++) {
                         r = a[i];
-                        x = { ___i: r.___i, id: r.id };
+                        r.___i = i;
+
+                        x = { ___i: i, id: r.id };
 
                         ids = (_.map(c_ids, function (c_) { return r[c_]; })).join(' ').trim();
                         ascii = (_.map(c_ascii, function (c_) { return r[c_]; })).join(' ').trim();
@@ -323,9 +329,9 @@
                         org = (_.map(c_org, function (c_) { return r[c_]; })).join(' ').trim();
 
                         if (cache_name == master_name) {
-                            if (col_11.length > 0) {
+                            if (has_join_11) {
                                 col_11.map((c_, i_) => {
-                                    //x[c_] = 
+                                    if (r[c_]) x[alias_11[i_]] = inx[api_11[i_]][r[c_]];
                                 });
                             }
                         }
@@ -341,6 +347,7 @@
                         x.org = org;
 
                         ex.push(x);
+                        inx[cache_name][r.id] = r;
                     }
 
                     ext[cache_name] = ex;
@@ -351,64 +358,6 @@
 
         ___log_index('Complete at ' + new Date().toLocaleString());
     }; 
-
-    this.f_cache___index_reset_all____backup = function () {
-        ___log_index('Start ... ' + new Date().toLocaleString());
-
-        const master_name = $.CACHE_SETTING.master_name;
-        const full_text_search = $.CACHE_SETTING.full_text_search;
-        const raw = $.CACHE_DATA_RAW;
-        const ext = $.CACHE_DATA_EXT;
-
-        if (raw && ext) {
-            let i = 0, r, cf, a = [], ex = [], x;
-
-            for (var cache_name in full_text_search) {
-                cf = full_text_search[cache_name];
-                a = raw[cache_name];
-                ex = [];
-
-                if (cache_name != master_name && cf && a && a.length > 0) {
-                    let c_ids = [], c_ascii = [], c_utf8 = [], c_org = [];
-                    let ids, ascii, utf8, org;
-
-                    if (cf.ids) c_ids = _.filter(cf.ids.split(','), function (o_) { return o_.length > 0; });
-                    if (cf.ascii) c_ascii = _.filter(cf.ascii.split(','), function (o_) { return o_.length > 0; });
-                    if (cf.utf8) c_utf8 = _.filter(cf.utf8.split(','), function (o_) { return o_.length > 0; });
-                    if (cf.org) c_org = _.filter(cf.org.split(','), function (o_) { return o_.length > 0; });
-                    
-                    for (i = 0; i < a.length; i++) {
-                        r = a[i];
-
-                        if (i == 0) {
-                            ___log_index(c_ascii);
-                        }
-
-                        ids = c_ids.map((c_) => { return r[c_] ? '' : r[c_]; }).join(' ');
-                        ascii = c_ascii.map((c_) => { return r[c_] ? '' : r[c_]; }).join(' ');
-                        utf8 = c_utf8.map((c_) => { return r[c_] ? '' : r[c_]; }).join(' ');
-                        org = c_org.map((c_) => { return r[c_] ? '' : r[c_]; }).join(' ');
-
-                        x = {
-                            ___i: r.___i,
-                            id: r.id,
-
-                            ids: ids,
-                            ascii: ascii,
-                            utf8: utf8,
-                            org: org
-                        };
-
-                        ex.push(x);
-                    }
-
-                    ext[cache_name] = ex;
-                }
-            }
-        }
-
-        ___log_index('Complete at ' + new Date().toLocaleString());
-    };
 
     //#endregion
 };
