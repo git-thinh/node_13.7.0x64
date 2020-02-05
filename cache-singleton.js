@@ -3,10 +3,11 @@
     const $ = this;
 
     //#region [ LOG ]
+
     const ___yyyyMMddHHmmss = () => new Date().toISOString().slice(-24).replace(/\D/g, '').slice(0, 8) + '_' + new Date().toTimeString().split(' ')[0].replace(/\D/g, '');
 
     const ___log = (...agrs) => console.log('CACHE: ', ...agrs);
-    const ___log_tcp_init = (...agrs) => { }; //console.log('TCP_INIT: ', ...agrs);
+    const ___log_tcp_init = (...agrs) => console.log('TCP_INIT: ', ...agrs);
     const ___log_index = (...agrs) => console.log('INDEX: ', ...agrs);
 
     //#endregion
@@ -70,7 +71,7 @@
         const chunks_ = [];
         let last_ = [];
 
-        ___log_tcp_init('Begin connect at ' + new Date().toLocaleString());
+        //___log_tcp_init('Begin connect at ' + new Date().toLocaleString());
 
         socket_.on('error', function (error) {
             $.IS_BUSY = false;
@@ -89,7 +90,7 @@
 
             if (done) {
                 TCP_INIT_BUF_TOTAL = TCP_INIT_BUF_CONNECT_COUNTER - 1;
-                ___log_tcp_init('BUFFER RECEIVE OK: ', TCP_INIT_BUF_TOTAL);
+                //___log_tcp_init('BUFFER RECEIVE OK: ', TCP_INIT_BUF_TOTAL);
                 socket_.end();
             } else {
                 const buf = Buffer.concat(chunks_);
@@ -231,7 +232,127 @@
 
     //#region [ INDEX ]
 
+    const ___convert_unicode_to_ascii = function (str) {
+        if (str == null || str.length == 0) return '';
+        str = str.trim();
+        if (str.length == 0) return '';
+
+        var AccentsMap = [
+            "aàảãáạăằẳẵắặâầẩẫấậ",
+            "AÀẢÃÁẠĂẰẲẴẮẶÂẦẨẪẤẬ",
+            "dđ", "DĐ",
+            "eèẻẽéẹêềểễếệ",
+            "EÈẺẼÉẸÊỀỂỄẾỆ",
+            "iìỉĩíị",
+            "IÌỈĨÍỊ",
+            "oòỏõóọôồổỗốộơờởỡớợ",
+            "OÒỎÕÓỌÔỒỔỖỐỘƠỜỞỠỚỢ",
+            "uùủũúụưừửữứự",
+            "UÙỦŨÚỤƯỪỬỮỨỰ",
+            "yỳỷỹýỵ",
+            "YỲỶỸÝỴ"
+        ];
+        for (var i = 0; i < AccentsMap.length; i++) {
+            var re = new RegExp('[' + AccentsMap[i].substr(1) + ']', 'g');
+            var char = AccentsMap[i][0];
+            str = str.replace(re, char);
+        }
+
+        str = str
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/đ/g, "d")
+            .replace(/Đ/g, "D");
+
+        str = str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g, " ");
+        str = str.replace(/ + /g, " ");
+
+        str = str.toLowerCase();
+
+        return str;
+    };
+
     this.f_cache___index_reset_all = function () {
+        ___log_index('Start ... ' + new Date().toLocaleString());
+
+        const setting = $.CACHE_SETTING;
+        const master_name = setting.master_name;
+        const full_text_search = setting.full_text_search;
+        //const full_text_search = { USER: setting.full_text_search['USER'] };
+        const raw = $.CACHE_DATA_RAW;
+        const ext = $.CACHE_DATA_EXT;
+
+        if (raw && ext) {
+            let i = 0, r, cf, a = [], ex = [], x;
+
+            const cache_names = _.filter(Object.keys(full_text_search), function (o_) { return o_ != master_name; });
+            if (master_name) cache_names.push(master_name);
+
+            cache_names.forEach((cache_name) => {
+
+                cf = full_text_search[cache_name];
+                a = raw[cache_name];
+                ex = [];
+
+                if (cf && a && a.length > 0) {
+                    let join_1_1, join_1_n, col_11 = [], api_11 = [];
+
+                    if (master_name && cache_name == master_name) {
+                        if (setting.join_1_1) join_1_1 = setting.join_1_1[master_name];
+                        if (setting.join_1_n) join_1_n = setting.join_1_n[master_name];
+                        if (join_1_1) {
+                            col_11 = Object.keys(join_1_1);
+                            api_11 = Object.values(join_1_1);
+                        }
+                    }
+
+                    let c_ids = [], c_ascii = [], c_utf8 = [], c_org = [];
+                    let ids, ascii, utf8, org;
+
+                    if (cf.ids) c_ids = _.filter(cf.ids.split(','), function (o_) { return o_.length > 0; });
+                    if (cf.ascii) c_ascii = _.filter(cf.ascii.split(','), function (o_) { return o_.length > 0; });
+                    if (cf.utf8) c_utf8 = _.filter(cf.utf8.split(','), function (o_) { return o_.length > 0; });
+                    if (cf.org) c_org = _.filter(cf.org.split(','), function (o_) { return o_.length > 0; });
+
+                    for (i = 0; i < a.length; i++) {
+                        r = a[i];
+                        x = { ___i: r.___i, id: r.id };
+
+                        ids = (_.map(c_ids, function (c_) { return r[c_]; })).join(' ').trim();
+                        ascii = (_.map(c_ascii, function (c_) { return r[c_]; })).join(' ').trim();
+                        utf8 = (_.map(c_utf8, function (c_) { return r[c_]; })).join(' ').trim();
+                        org = (_.map(c_org, function (c_) { return r[c_]; })).join(' ').trim();
+
+                        if (cache_name == master_name) {
+                            if (col_11.length > 0) {
+                                col_11.map((c_, i_) => {
+                                    //x[c_] = 
+                                });
+                            }
+                        }
+
+                        if (ids && ids.length > 0) ids = ' ' + ids + ' ';
+                        if (ascii && ascii.length > 0) ascii = ' ' + ___convert_unicode_to_ascii(ascii) + ' ';
+                        if (utf8 && utf8.length > 0) utf8 = ' ' + utf8.toLowerCase().replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g, " ").replace(/ + /g, " ") + ' ';
+                        if (org && org.length > 0) org = ' ' + org + ' ';
+
+                        x.ids = ids;
+                        x.ascii = ascii;
+                        x.utf8 = utf8;
+                        x.org = org;
+
+                        ex.push(x);
+                    }
+
+                    ext[cache_name] = ex;
+                }
+            });
+
+        }
+
+        ___log_index('Complete at ' + new Date().toLocaleString());
+    }; 
+
+    this.f_cache___index_reset_all____backup = function () {
         ___log_index('Start ... ' + new Date().toLocaleString());
 
         const master_name = $.CACHE_SETTING.master_name;
@@ -247,17 +368,35 @@
                 a = raw[cache_name];
                 ex = [];
 
-                if (cache_name != master_name && a && cf) {
+                if (cache_name != master_name && cf && a && a.length > 0) {
+                    let c_ids = [], c_ascii = [], c_utf8 = [], c_org = [];
+                    let ids, ascii, utf8, org;
+
+                    if (cf.ids) c_ids = _.filter(cf.ids.split(','), function (o_) { return o_.length > 0; });
+                    if (cf.ascii) c_ascii = _.filter(cf.ascii.split(','), function (o_) { return o_.length > 0; });
+                    if (cf.utf8) c_utf8 = _.filter(cf.utf8.split(','), function (o_) { return o_.length > 0; });
+                    if (cf.org) c_org = _.filter(cf.org.split(','), function (o_) { return o_.length > 0; });
+                    
                     for (i = 0; i < a.length; i++) {
                         r = a[i];
+
+                        if (i == 0) {
+                            ___log_index(c_ascii);
+                        }
+
+                        ids = c_ids.map((c_) => { return r[c_] ? '' : r[c_]; }).join(' ');
+                        ascii = c_ascii.map((c_) => { return r[c_] ? '' : r[c_]; }).join(' ');
+                        utf8 = c_utf8.map((c_) => { return r[c_] ? '' : r[c_]; }).join(' ');
+                        org = c_org.map((c_) => { return r[c_] ? '' : r[c_]; }).join(' ');
+
                         x = {
                             ___i: r.___i,
                             id: r.id,
 
-                            ids: '',
-                            ascii: '',
-                            utf8: '',
-                            org: ''
+                            ids: ids,
+                            ascii: ascii,
+                            utf8: utf8,
+                            org: org
                         };
 
                         ex.push(x);

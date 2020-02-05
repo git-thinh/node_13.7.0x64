@@ -31,8 +31,8 @@
 
     _HTTP_APP.use(_HTTP_BODY_PARSER.json());
     _HTTP_APP.use((error, req, res, next) => {
-        if (___CACHE_DONE == false) {
-            return res.json({ ok: false, mesage: 'Api is caching ...' });
+        if ($.CACHE_STORE.IS_BUSY) {
+            return res.json({ ok: false, state: $.CACHE_STORE.STATE, mesage: 'Api is caching ...' });
         }
         if (error !== null) {
             return res.json({ ok: false, mesage: 'Invalid json ' + error.toString() });
