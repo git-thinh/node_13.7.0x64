@@ -52,6 +52,17 @@
         _self.LOG.info(s);
         res.json({ ok: true, message: s });
     });
+    _HTTP_APP.get('/raw/:cache_name', function (req, res) {
+        const api = req.params.cache_name;
+        if (api) {
+            const cache_name = api.toUpperCase();
+            const _self = $;
+            const val = _self.CACHE_STORE.f_get___test(cache_name);
+            res.json(val);
+        } else {
+            res.json([]);
+        }
+    });
 
     _HTTP_APP.get('/cache-setting', function (req, res) {
         const _self = $;

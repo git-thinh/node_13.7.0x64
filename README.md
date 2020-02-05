@@ -1,4 +1,9 @@
 
+.\node.exe .\raw2cache.js --max-old-space-size=4096
+.\node.exe .\db2txt.js --max-old-space-size=4096
+.\node.exe .\app.js --max-old-space-size=4096
+
+
 # https://github.com/coreybutler/node-windows
 
 npm install node-windows dotenv mssql cron body-parser express web-push socket.io lodash node-fetch -S

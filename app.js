@@ -1,10 +1,11 @@
-﻿const ___CACHE_DATA = {};
+﻿const ___CACHE_DATA_RAW = {};
+const ___CACHE_DATA_EXT = {};
 const ___CACHE_INDEX = {};
 const ___CACHE_SETTING = {
     connect_string: {
         db_123: {
             user: 'sa',
-            password: '',
+            password: 'dev@123',
             server: '192.168.10.54',
             database: 'POL_20191230',
             connectionTimeout: 300000,
@@ -32,7 +33,7 @@ const ___CACHE_SETTING = {
         },
         db_amz: {
             user: 'mobile',
-            password: '',
+            password: 'HjdbFV7jos9bc6lw',
             server: '192.168.10.37',
             database: 'Release_FB51_App',
             connectionTimeout: 300000,
@@ -66,7 +67,7 @@ const ___CACHE_SETTING = {
         POL_SYS_SMS: "SELECT * FROM [mobile].[sys_sms]"
     },
     join_1_1: {
-        TEST: {
+        POL_PAWN: {
             user_created_id: 'USER',
             cus_created_id: 'POL_CUSTOMER',
             customer_id: 'POL_CUSTOMER',
@@ -76,13 +77,13 @@ const ___CACHE_SETTING = {
         }
     },
     join_1_n: {
-        TEST: {
+        POL_PAWN: {
             ___list_support_schedule: 'POL_SUPPORT_SCHEDULE.int_pawn_online_id',
             ___list_online_process: 'POL_PROCESS.int_pol_pawn_id'
         }
     },
     full_text_search: {
-        TEST: {
+        POL_PAWN: {
             ids: ',id,customer_id,int_pawn_id_pos,',
             ascii: ',lng_money,int_days,int_created_date,str_channel_name,',
             utf8: ',str_asset_type_name,str_channel_name,str_city_name,str_district_name,str_description,str_trademark,',
@@ -123,7 +124,9 @@ const _JOB = require('cron').CronJob;
 let _CACHE_STORE = require('./cache-singleton.js');
 let _HTTP_STORE = require('./http-singleton.js');
 
-_CACHE_STORE.CACHE_DATA = ___CACHE_DATA;
+_CACHE_STORE.CACHE_DATA_RAW = ___CACHE_DATA_RAW;
+_CACHE_STORE.CACHE_DATA_EXT = ___CACHE_DATA_EXT;
+
 _CACHE_STORE.CACHE_INDEX = ___CACHE_INDEX;
 _CACHE_STORE.CACHE_SETTING = ___CACHE_SETTING;
 
