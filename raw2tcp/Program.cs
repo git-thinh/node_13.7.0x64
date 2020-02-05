@@ -46,21 +46,22 @@ namespace raw2tcp
                             }
                         }//end for
 
-                        //try
-                        //{
-                        //    TcpClient client = new TcpClient();
-                        //    client.Connect("127.0.0.1", port);
-                        //    byte[] buffer = Encoding.ASCII.GetBytes("OK");
-                        //    NetworkStream stream = client.GetStream();
-                        //    stream.Write(buffer, 0, buffer.Length); //sends bytes to server
-                        //    stream.Flush();
+                        try
+                        {
+                            TcpClient client = new TcpClient();
+                            client.Connect("127.0.0.1", port);
 
-                        //    stream.Close();
-                        //    client.Close();
-                        //}
-                        //catch
-                        //{
-                        //}
+                            byte[] buffer = Encoding.ASCII.GetBytes("OK");
+                            NetworkStream stream = client.GetStream();
+                            stream.Write(buffer, 0, buffer.Length); //sends bytes to server
+                            stream.Flush();
+
+                            stream.Close();
+                            client.Close();
+                        }
+                        catch
+                        {
+                        }
                     }
                 }
             }

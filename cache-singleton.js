@@ -2,6 +2,7 @@
     //#region [ VARIABLE ]
     const $ = this;
 
+    const ___yyyyMMddHHmmss = () => new Date().toISOString().slice(-24).replace(/\D/g, '').slice(0, 8) + '_' + new Date().toTimeString().split(' ')[0].replace(/\D/g, '');
     const ___log = (...agrs) => console.log('CACHE: ', ...agrs);
     const ___log_tcp_init = (...agrs) => console.log('TCP_INIT: ', ...agrs);
 
@@ -17,9 +18,13 @@
 
     //#region [ TCP_INIT ]
 
-    let ADDRESS_PORT_INIT = { address: '127.0.0.1', port: 0 }; 
+    let TCP_INIT_BUF_CONNECT_COUNTER = 0;
+    let TCP_INIT_BUF_RECEIVE_COUNTER = 0;
+    let TCP_INIT_BUF_TOTAL = 0;
 
     const _TCP_INIT___on_buffering = function (buf) { 
+        TCP_INIT_BUF_RECEIVE_COUNTER++;
+
         $.STATE = 'CACHE_BUFFER';
 
         const text = buf.toString('utf8'); 
@@ -30,10 +35,16 @@
             $.CACHE_DATA_RAW[cache_name] = json[cache_name];
         }
 
-        ___log_tcp_init('Receive buffer: ' + a.join(', ') + ' Size = ' + buf.length + ' at ' + new Date().toLocaleString());
+        ___log_tcp_init('Receive buffer: ' + a.join(', ') + ' Size = ' + buf.length + ' at ' + new Date().toLocaleString() + ' | ', TCP_INIT_BUF_RECEIVE_COUNTER, TCP_INIT_BUF_TOTAL);
+
+        if (TCP_INIT_BUF_TOTAL == TCP_INIT_BUF_RECEIVE_COUNTER) _TCP_INIT___on_done();
     };
 
     const _TCP_INIT___on_done = function (buf) {
+        TCP_INIT_BUF_TOTAL = 0;
+        TCP_INIT_BUF_CONNECT_COUNTER = 0;
+        TCP_INIT_BUF_RECEIVE_COUNTER = 0;
+
         $.STATE = 'CACHE_INDEX';
 
         ___log_tcp_init('Start indexing ... ' + new Date().toLocaleString());
@@ -44,32 +55,41 @@
     };
 
     const _TCP_INIT = _NET.createServer((socket_) => {
-        //if ($.IS_BUSY) return;
+        TCP_INIT_BUF_CONNECT_COUNTER++;
 
         $.IS_BUSY = true;
         $.STATE = 'CACHE_BUFFER';
 
         const chunks_ = []; 
+        let last_ = [];
 
-        ___log_tcp_init('Beginning at ' + new Date().toLocaleString());
+        ___log_tcp_init('Begin connect at ' + new Date().toLocaleString());
 
         socket_.on('error', function (error) {
             $.IS_BUSY = false;
         });
         socket_.on('data', chunk => {
-            if (chunk.length == 2) {
-                if (chunk.toString() == 'OK') {
-                    setTimeout(function (o) { _TCP_INIT___on_done(); }, 1000);
-                    socket_.end();
-                    return;
-                }
-            }
+            last_ = chunk;
             chunks_.push(chunk);
         });
 
         socket_.on('end', () => {
-            const buf = Buffer.concat(chunks_); 
-            setTimeout(function (o) { _TCP_INIT___on_buffering(o); }, 1, buf);
+            let done = false;
+
+            if (last_.length == 2)
+                if (last_.toString() == 'OK') 
+                    done = true;
+
+            if (done) {
+                TCP_INIT_BUF_TOTAL = TCP_INIT_BUF_CONNECT_COUNTER - 1;
+                ___log_tcp_init('BUFFER RECEIVE OK: ', TCP_INIT_BUF_TOTAL);
+                socket_.end();
+            } else {
+                const buf = Buffer.concat(chunks_);
+                setTimeout(function (o) {
+                    _TCP_INIT___on_buffering(o);
+                }, 1, buf);
+            }
         });
     });
     _TCP_INIT.on('error', (err) => {
@@ -79,9 +99,7 @@
     //#endregion
 
     //#region [ TCP_UPDATE ]
-
-    let ADDRESS_PORT_UPDATE = { address: '127.0.0.1', port: 0 };
-
+    
     const _TCP_UPDATE = _NET.createServer((socket_) => {
         const chunks_ = [];
 

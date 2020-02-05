@@ -24,7 +24,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "node_13.7.0x64", ".", "{6A4
 		SlnRelativePath = "..\node_13.7.0x64\"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "raw2tcp", "raw2tcp\raw2tcp.csproj", "{C703F02D-E191-49DD-982D-ED3800E00F69}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "txt2tcp", "raw2tcp\txt2tcp.csproj", "{C703F02D-E191-49DD-982D-ED3800E00F69}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

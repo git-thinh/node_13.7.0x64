@@ -1,8 +1,9 @@
 
-node --max-old-space-size=4096 raw2cache.js
-node --max-old-space-size=4096 db2txt.js
-node --max-old-space-size=4096 app.js
 
+node --max-old-space-size=4096 app.js
+node --max-old-space-size=4096 db2txt.js
+
+txt2tcp.exe 12345
 
 # https://github.com/coreybutler/node-windows
 
