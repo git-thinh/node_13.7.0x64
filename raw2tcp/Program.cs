@@ -10,40 +10,57 @@ namespace raw2tcp
     {
         static void Main(string[] args)
         {
-            if (args.Length > 1)
+            if (args.Length > 0)
             {
-                string file = args[1];
-                if (File.Exists(file))
+                if (Directory.Exists("txt"))
                 {
+                    string[] fs = Directory.GetFiles("txt", "*.txt");
+                    if (fs.Length == 0) return;
+
                     int port = 0;
                     if (int.TryParse(args[0], out port) && port > 0)
                     {
-                        //Console.WriteLine(args[0] + " " + args[1]);
-                        try
+                        string file;
+                        for (int i = 0; i < fs.Length; i++)
                         {
-                            TcpClient client = new TcpClient();
-                            //client.Connect("52.77.82.145", 80);
-                            client.Connect("127.0.0.1", port);
-                            //client.Connect(host, port);
+                            file = fs[i];
 
-                            //var client = new TcpClient("apimobi.f88.vn", 80);
-                            //var client = new TcpClient("localhost", 9015);
-                            //var client = new TcpClient("localhost", 3456);
+                            try
+                            {
+                                TcpClient client = new TcpClient();
+                                client.Connect("127.0.0.1", port);
 
-                            //byte[] buffer = System.Text.Encoding.UTF8.GetBytes(message);
-                            byte[] buffer = File.ReadAllBytes(file);
+                                byte[] buffer = File.ReadAllBytes(file);
 
-                            NetworkStream stream = client.GetStream();
-                            stream.Write(buffer, 0, buffer.Length); //sends bytes to server
-                            stream.Flush();
-                            stream.Close();
-                            client.Close();
+                                NetworkStream stream = client.GetStream();
+                                stream.Write(buffer, 0, buffer.Length); //sends bytes to server
+                                stream.Flush();
 
-                            Console.WriteLine("Send file " + file + "[" + buffer.Length.ToString() + "] to TCP:" + port.ToString() + " success");
-                        }
-                        catch
-                        {
-                        }
+                                stream.Close();
+                                client.Close();
+
+                                Console.WriteLine("[" + (i + 1) + "|" + fs.Length + "] " + Path.GetFileName(file) + ": " + buffer.Length.ToString() + " bytes send ok");
+                            }
+                            catch
+                            {
+                            }
+                        }//end for
+
+                        //try
+                        //{
+                        //    TcpClient client = new TcpClient();
+                        //    client.Connect("127.0.0.1", port);
+                        //    byte[] buffer = Encoding.ASCII.GetBytes("OK");
+                        //    NetworkStream stream = client.GetStream();
+                        //    stream.Write(buffer, 0, buffer.Length); //sends bytes to server
+                        //    stream.Flush();
+
+                        //    stream.Close();
+                        //    client.Close();
+                        //}
+                        //catch
+                        //{
+                        //}
                     }
                 }
             }

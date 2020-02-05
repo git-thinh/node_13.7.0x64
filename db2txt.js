@@ -1,7 +1,6 @@
 ﻿const ___log = (...agrs) => console.log('DB: ', ...agrs);
 
-const _sql_select_top = 'top 1000 '; //
-const ___CACHE_DATA_RAW = {};
+const _sql_select_top = ''; //top 1000  
 const ___CACHE_SETTING = {
     connect_string: {
         db_123: {
@@ -128,15 +127,10 @@ const ___CACHE_SETTING = {
 };
 
 const _FS = require('fs');
-const _SQL = require('mssql'); 
+const _SQL = require('mssql');
 
-const ___main_CacheReady = function () {
-    // utf8 ascii
-    _FS.writeFile('raw.txt', JSON.stringify(___CACHE_DATA_RAW), 'utf8', (err) => {
-        if (err) throw err;
-
-        ___log('\n\n-> CACHE_DONE .... ');
-    });
+const ___main_CacheReady = function () { 
+    ___log('\n\n-> CACHE_DONE .... '); 
 };
 
 let _CACHE_TOTAL, _CACHE_COUNTER;
@@ -157,6 +151,8 @@ const cache___writeFileTXT = async function () {
 
         let text_sql = '', request;
         con_cf.scripts.forEach((cache_name) => {
+
+            const ___CACHE_DATA_RAW = {};
             ___CACHE_DATA_RAW[cache_name] = [];
 
             text_sql = ___CACHE_SETTING.script[cache_name];
@@ -180,13 +176,20 @@ const cache___writeFileTXT = async function () {
                 });
 
                 request.on('done', result => {
-                    _CACHE_COUNTER++;
-                    ___log('--- OK ' + cache_name + ': \t\t\t = ' + result.rowsAffected[0]);
-                    if (_CACHE_COUNTER == _CACHE_TOTAL) ___main_CacheReady();
+
+                    // utf8 ascii
+                    _FS.writeFile('txt\\' + cache_name + '.txt', JSON.stringify(___CACHE_DATA_RAW), 'utf8', (err) => {
+                        if (err) throw err;
+
+                        _CACHE_COUNTER++;
+                        ___log('--- OK ' + cache_name + ': \t\t\t = ' + result.rowsAffected[0]);
+                        if (_CACHE_COUNTER == _CACHE_TOTAL) ___main_CacheReady();
+                    });
+
                 });
             } else {
                 _CACHE_COUNTER++;
-                    ___log('\n\nERROR = ' + cache_name + ' cannot find script to execute ...');
+                ___log('\n\nERROR = ' + cache_name + ' cannot find script to execute ...');
                 if (_CACHE_COUNTER == _CACHE_TOTAL) ___main_CacheReady();
             }
         });

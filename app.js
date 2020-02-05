@@ -2,6 +2,7 @@
 const ___CACHE_DATA_EXT = {};
 const ___CACHE_INDEX = {};
 const ___CACHE_SETTING = {
+    master_name: 'POL_PAWN',
     connect_string: {
         db_123: {
             user: 'sa',
@@ -88,11 +89,128 @@ const ___CACHE_SETTING = {
             ascii: ',lng_money,int_days,int_created_date,str_channel_name,',
             utf8: ',str_asset_type_name,str_channel_name,str_city_name,str_district_name,str_description,str_trademark,',
             org: ',str_asset_type_name,'
+        },
+        POL_CUSTOMER: {
+            ids: ',id,',
+            ascii: ',str_phone,str_email,int_created_date,str_name,',
+            utf8: ',str_name,str_address,',
+            org: ',str_name,str_address,'
+        },
+        POL_CHANNEL: {
+            ids: ',id,',
+            ascii: ',str_name,',
+            utf8: ',str_name,'
+        },
+        REGION: {
+            ids: ',id,',
+            ascii: ',str_name,',
+            utf8: ',str_name,'
+        },
+        SHOP: {
+            ids: ',id,',
+            ascii: ',str_name,',
+            utf8: ',str_name,'
+        },
+        USER: {
+            ids: ',id,shop_id,group_id,',
+            ascii: ',str_user_name,str_possition,str_shop_name,',
+            utf8: ',str_full_name,str_shop_name,'
+        },
+        GROUP: {
+            ids: ',id,',
+            ascii: ',str_name,str_code,',
+            utf8: ',str_name,str_code,'
+        },
+        POL_ASSET_TYPE: {
+            ids: ',id,',
+            ascii: ',str_name,',
+            utf8: ',str_name,'
+        },
+        POL_PRIORITY: {
+            ids: ',,',
+            ascii: ',str_priority_name,',
+            utf8: ',str_priority_name,'
+        },
+        POL_REASON_FAIL: {
+            ids: ',,',
+            ascii: ',str_canceled_reason,',
+            utf8: ',str_canceled_reason,'
         }
     },
-    valid: {},
+    valid: {
+        MAX_SIZE: {
+
+        },
+        NOT_EMPTY: {
+            func: '',
+            message: ''
+        },
+        NOT_NULL: {},
+        NOT_EQUAL_ZERO: {}
+    },
     caption: {},
     plugin: {
+        notify___pushqueue: {
+            command: {
+                title: 'Đẩy vào hàng đợi bắn notify'
+            }
+        },
+        user___addnew: {
+            data: {
+                id: 'MAX___USER.id',
+                str_call_out_tooken: '',
+                int_approve_level: 1,
+                str_user_position: '0',
+                group_id: null,
+                str_user_name: 'hndd',
+                int_pol_status: 0,
+                int_pol_region: 0,
+                str_group_name: null,
+                str_full_name: 'F88 Đặng Dung',
+                str_pass_word: '12345@abc',
+                str_pass: '4QrcOUm6Wau+VuBX8g+IPg==',
+                str_possition: null,
+                shop_id: null,
+                str_shop_name: null,
+                bit_admin_caller: 0,
+                str_user_email: 'vuongthigiang@f88.vn',
+                int_dt_create: 'YYYYMMDDHHMMSS',
+                int_date_create: 'YYYYMMDD',
+                int_time_create: 'HHMMSS',
+                ___i: 0
+            },
+            valid: { 
+                str_call_out_tooken: [
+                    { name: 'NOT_EMPTY', config: [] }
+                ],
+                int_approve_level: [
+                    { name: 'NOT_NULL', config: [] },
+                    { name: 'NOT_EQUAL_ZERO', config: [] },
+                    { name: 'MAX_SIZE', config: [30] }
+                ],
+                str_user_position: 'MAX_SIZE',
+                group_id: '',
+                str_user_name: 'hndd',
+                int_pol_status: '',
+                int_pol_region: '',
+                str_group_name: '',
+                str_full_name: '',
+                str_pass_word: '',
+                str_pass: '',
+                str_possition: '',
+                shop_id: '',
+                str_shop_name: '',
+                bit_admin_caller: '',
+                str_user_email: '',
+                ___i: 0
+            },
+            command: [
+                {
+                    name: 'notify___pushqueue', 
+                    config: {}
+                }
+            ]
+        },
         pol_pawn___addnew: {
             data: {},
             valid: {},
@@ -136,7 +254,7 @@ _CACHE_STORE.HTTP_STORE = _HTTP_STORE;
 _HTTP_STORE.INFO = ___INFO;
 _HTTP_STORE.CACHE_STORE = _CACHE_STORE;
 
-_CACHE_STORE.on_ready = function (add_port_init, add_port_update) {
+_CACHE_STORE.on_ready_shared = function (add_port_init, add_port_update) {
     ___INFO.TCP_CACHE_INIT = add_port_init;
     ___INFO.TCP_CACHE_UPDATE = add_port_update;
 
@@ -149,11 +267,11 @@ _CACHE_STORE.on_ready = function (add_port_init, add_port_update) {
     _CACHE_STORE.LOG = _LOG;
     _HTTP_STORE.LOG = _LOG;
 };
-_CACHE_STORE.on_busy = function (state_) {
+_CACHE_STORE.on_busy_shared = function (state_) {
     console.log('CACHE ENGINE is busy: ', state_);
 };
 
-_HTTP_STORE.on_ready = function (add_port_api) {
+_HTTP_STORE.on_ready_shared = function (add_port_api) {
     ___INFO.HTTP_API = add_port_api;
     ___INFO.APP_NAME = 'CACHE_' + ___INFO.HTTP_API.port;
 

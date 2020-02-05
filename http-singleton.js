@@ -7,8 +7,7 @@
 
     //--------------------------------------------------------------------------------------------
     let ADDRESS_PORT = { address: '127.0.0.1', port: 0 };
-
-    let on_ready = function () { };
+     
     //--------------------------------------------------------------------------------------------
     const ___guid = function () {
         return 'id-xxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -46,28 +45,25 @@
     _HTTP_APP.get('/', function (req, res) {
         res.json($.INFO);
     });
-    _HTTP_APP.get('/test-log', function (req, res) { 
-        const _self = $;
-        const s = _self.INFO.APP_NAME + ' Test LOG at ' + new Date().toLocaleString();
-        _self.LOG.info(s);
+    _HTTP_APP.get('/test-log', function (req, res) {  
+        const s = $.INFO.APP_NAME + ' Test LOG at ' + new Date().toLocaleString();
+        $.LOG.info(s);
         res.json({ ok: true, message: s });
     });
     _HTTP_APP.get('/raw/:cache_name', function (req, res) {
         const api = req.params.cache_name;
         if (api) {
-            const cache_name = api.toUpperCase();
-            const _self = $;
-            const val = _self.CACHE_STORE.f_get___test(cache_name);
+            const cache_name = api.toUpperCase(); 
+            const val = $.CACHE_STORE.f_get___test(cache_name);
             res.json(val);
         } else {
             res.json([]);
         }
     });
 
-    _HTTP_APP.get('/cache-setting', function (req, res) {
-        const _self = $;
+    _HTTP_APP.get('/cache-setting', function (req, res) { 
 
-        const val = _self.CACHE_STORE.f_get___cache_setting();
+        const val = $.CACHE_STORE.f_get___cache_setting();
         //___log(val);
 
         res.json(val);
@@ -75,12 +71,11 @@
 
     _HTTP_APP.post('/cache-setting', function (req, res) {
         const m_ = req.body;
-        //___log(m_);
-        const _self = $;
+        //___log(m_); 
 
-        _self.CACHE_STORE.f_set___cache_setting(m_);
+        $.CACHE_STORE.f_set___cache_setting(m_);
 
-        res.json(_self.CACHE_STORE.f_get___cache_setting());
+        res.json($.CACHE_STORE.f_get___cache_setting());
     });
 
     _HTTP_APP.post('/api/cache-execute', function (req, res) {
@@ -91,6 +86,10 @@
     //#endregion
 
     //--------------------------------------------------------------------------------------------
+
+    const on_ready = function (add_port_api) {
+        $.on_ready_shared(add_port_api);
+    };
 
     this.f_response_message = function (m_) {
         ___log(m_);
@@ -111,12 +110,11 @@
     };
 
     this.f_start = function () {
-        const _self = this; 
 
         _HTTP_SERVER.listen(0, '127.0.0.1', () => {
-            _self.ADDRESS_PORT = _HTTP_SERVER.address();
-            console.log('HTTP_API: ', _self.ADDRESS_PORT);
-            _self.on_ready(_self.ADDRESS_PORT);
+            $.ADDRESS_PORT = _HTTP_SERVER.address();
+            console.log('HTTP_API: ', $.ADDRESS_PORT);
+            on_ready($.ADDRESS_PORT);
         });
 
         _IO.on('connection', client => {

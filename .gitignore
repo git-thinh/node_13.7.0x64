@@ -1,3 +1,5 @@
 /.vs
 /raw.txt
 /raw2tcp/obj
+/txt
+/*.pdb

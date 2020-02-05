@@ -7,7 +7,7 @@
     <ProjectGuid>{C703F02D-E191-49DD-982D-ED3800E00F69}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>raw2tcp</RootNamespace>
-    <AssemblyName>raw2tcp</AssemblyName>
+    <AssemblyName>txt2tcp</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
