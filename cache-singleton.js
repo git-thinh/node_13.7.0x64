@@ -305,9 +305,9 @@
                         if (setting.join_1_n) join_1_n = setting.join_1_n[master_name];
                         if (join_1_1) {
                             col_11 = Object.keys(join_1_1);
-                            api_11 = Object.values(join_1_1).map((o_) => { return o_.name; });
-                            alias_11 = Object.values(join_1_1).map((o_) => { return o_.alias; });
-                            has_join_11 = col_11.length == api_11.length && api_11.length == alias_11.length;
+                            api_11 = col_11.map(function (o_) { return join_1_1[o_].name; });
+                            alias_11 = col_11.map(function (o_) { return join_1_1[o_].alias; });
+                            has_join_11 = col_11.length > 0;
                         }
                     }
 

@@ -6,7 +6,7 @@ const ___CACHE_SETTING = {
         enable: true,
         max_size: 1000,
         broadcast: {
-            keys: ['*'], //CACHE_READY
+            keys: ['*', 'CACHE_READY', 'INDEX_11'],
             udp_log: ['127.0.0.1', 2020, true],
             udp_error: ['127.0.0.1', 2121, true]
         }
