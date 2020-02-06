@@ -155,7 +155,26 @@
 
     //#region [ /cache-index ]
 
+    _HTTP_APP.get('/cache-index', function (req, res) {
 
+        const val = $.CACHE_STORE.f_get___cache_setting();
+        //___log(val);
+
+        res.json(val);
+    });
+    
+    //#endregion
+
+    //#region [ /cache-join-1n ]
+
+
+    _HTTP_APP.get('/cache-join-1n', function (req, res) {
+
+        const val = $.CACHE_STORE.f_get___cache_setting();
+        //___log(val);
+
+        res.json(val);
+    });
 
     //#endregion
     

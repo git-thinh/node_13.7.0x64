@@ -279,22 +279,35 @@
         const setting = $.CACHE_SETTING;
         const master_name = setting.master_name;
         const full_text_search = setting.full_text_search;
+        const join_1_n = setting.join_1_n;
         //const full_text_search = { USER: setting.full_text_search['USER'] };
         const raw = $.CACHE_DATA_RAW;
         const ext = $.CACHE_DATA_EXT;
         const inx = $.CACHE_INDEX;
+        const j1n = $.CACHE_JOIN_1N;
 
         if (raw && ext) {
             let i = 0, r, cf, a = [], ex = [], x;
 
             const cache_names = _.filter(Object.keys(full_text_search), function (o_) { return o_ != master_name; });
             if (master_name) cache_names.push(master_name);
+             
+            let j1n_cols = [], j1n_apis = [], j1n_colums = [];
+            if (master_name && join_1_n && join_1_n[master_name]) {
+                j1n_cols = Object.keys(join_1_n[master_name]);
+                j1n_apis = j1n_cols.map(function (o_) { return join_1_1[o_].name; });
+                j1n_colums = j1n_cols.map(function (o_) { return join_1_1[o_].column; });
+                has_j1n = j1n_cols.length > 0;
+            }
 
             cache_names.forEach((cache_name) => {
                 inx[cache_name] = {};
                 cf = full_text_search[cache_name];
                 a = raw[cache_name];
                 ex = [];
+
+                let index_j1n = j1n_apis.indexOf(cache_name);
+                if (index_j1n != -1) j1n[cache_name] = {};
 
                 if (cf && a && a.length > 0) {
                     let join_1_1, join_1_n, col_11 = [], api_11 = [], alias_11 = [];
@@ -350,6 +363,13 @@
 
                         ex.push(x);
                         inx[cache_name][r.id] = r;
+
+                        if (index_j1n != -1) {
+                            if (j1n[cache_name][r[j1n_colums[index_j1n]]])
+                                j1n[cache_name][r[j1n_colums[index_j1n]]].push(r.id);
+                            else
+                                j1n[cache_name][r[j1n_colums[index_j1n]]] = [r.id];
+                        }
                     }
 
                     ext[cache_name] = ex;

@@ -1,6 +1,9 @@
 ﻿const ___CACHE_DATA_RAW = {};
 const ___CACHE_DATA_EXT = {};
 const ___CACHE_INDEX = {};
+
+const ___CACHE_JOIN_1N = {};
+
 const ___CACHE_SETTING = {
     log: {
         enable: true,
@@ -89,8 +92,8 @@ const ___CACHE_SETTING = {
     },
     join_1_n: {
         POL_PAWN: {
-            ___list_support_schedule: 'POL_SUPPORT_SCHEDULE.int_pawn_online_id',
-            ___list_online_process: 'POL_PROCESS.int_pol_pawn_id'
+            list_support_schedule: { name: 'POL_SUPPORT_SCHEDULE', column: 'int_pawn_online_id' },
+            list_online_process: { name: 'POL_PROCESS', column: 'int_pol_pawn_id' }
         }
     },
     full_text_search: {
@@ -258,6 +261,7 @@ let _HTTP_STORE = require('./http-singleton.js');
     _CACHE_STORE.CACHE_DATA_EXT = ___CACHE_DATA_EXT;
 
     _CACHE_STORE.CACHE_INDEX = ___CACHE_INDEX;
+    _CACHE_STORE.CACHE_JOIN_1N = ___CACHE_JOIN_1N;
     _CACHE_STORE.CACHE_SETTING = ___CACHE_SETTING;
 
     _CACHE_STORE.INFO = ___INFO;
