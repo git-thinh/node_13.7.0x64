@@ -305,7 +305,7 @@
                             col_11 = Object.keys(join_1_1);
                             api_11 = Object.values(join_1_1).map((o_) => { return o_.name; });
                             alias_11 = Object.values(join_1_1).map((o_) => { return o_.alias; });
-                            has_join_11 = col_11.length == api_11.length == alias_11.length;
+                            has_join_11 = col_11.length == api_11.length && api_11.length == alias_11.length;
                         }
                     }
 
