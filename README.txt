@@ -1,13 +1,14 @@
-
+node --max-old-space-size=4096 logview.js
+node --max-old-space-size=4096 logview-err.js
 
 node --max-old-space-size=4096 app.js
 node --max-old-space-size=4096 db2txt.js
 
-txt2tcp.exe 1000
+.\txt2tcp.exe 1000
 
 # https://github.com/coreybutler/node-windows
 
-npm install node-windows dotenv mssql cron body-parser express socket.io lodash node-fetch -S
+npm install dotenv mssql cron body-parser express socket.io lodash node-fetch -S
 
 npm install node-windows dotenv mssql cron body-parser express web-push socket.io lodash node-fetch -S
 

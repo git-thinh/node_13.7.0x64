@@ -1,22 +1,24 @@
 ﻿let httpSingleton = function httpSingleton() {
-    const PORT = 12345;
+    //#region [ VARIABLE ]
 
     const $ = this;
+    const PORT = 12345;
 
-    // Defining a var instead of this (works for variable & function) will create a private definition
-    //--------------------------------------------------------------------------------------------
-    const ___log = (...agrs) => console.log('API: ', ...agrs);
-
-    //--------------------------------------------------------------------------------------------
-    let ADDRESS_PORT = { address: '127.0.0.1', port: 0 };
-
-    //--------------------------------------------------------------------------------------------
+    const SCOPE = 'API';
+    const ___log = (...agrs) => { if ($.LOG) $.LOG.f_write('INFO', SCOPE, '', ...agrs); }
+    const ___log_key = (key, ...agrs) => { if ($.LOG) $.LOG.f_write('INFO', SCOPE, key, ...agrs); }
+    const ___log_error = (key, ...agrs) => { if ($.LOG) $.LOG.f_write('ERR', SCOPE, key, ...agrs); } 
+    
     const ___guid = function () {
         return 'id-xxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
             var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
         });
     };
+
+    //#endregion
+
+    //#region [ API SETUP ]
 
     const _PATH = require('path');
     const _HTTP_EXPRESS = require('express');
@@ -40,31 +42,101 @@
         return next();
     });
 
-    //--------------------------------------------------------------------------------------------
+    //#endregion
 
-    //#region [ API ]
+    //#region [ / ]
 
     _HTTP_APP.get('/', function (req, res) {
         res.json($.INFO);
     });
+
+    //#endregion
+
+    //#region [ TEST ]
+
     _HTTP_APP.get('/test-log', function (req, res) {
         const s = $.INFO.APP_NAME + ' Test LOG at ' + new Date().toLocaleString();
         $.LOG.info(s);
         res.json({ ok: true, message: s });
     });
-    _HTTP_APP.get('/raw/:cache_name', function (req, res) {
+
+    //#endregion
+
+    //#region [ LOG ]
+
+    _HTTP_APP.get('/log', function (req, res) {
+        const log = $.LOG.f_get_all();
+        res.json(log);
+    });
+
+    //--------------------------------------------------
+
+    _HTTP_APP.get('/log/keys', function (req, res) {
+        const log = $.LOG.f_get_keys();
+        res.json(log);
+    });
+
+    _HTTP_APP.get('/log/scopes', function (req, res) {
+        const log = $.LOG.f_get_scopes();
+        res.json(log);
+    });
+
+    //--------------------------------------------------
+
+    _HTTP_APP.get('/log/clear', function (req, res) {
+        const log = $.LOG.f_clear();
+        res.json(log);
+    });
+
+    _HTTP_APP.get('/log/setting', function (req, res) {
+        const log = $.CACHE_SETTING.log;
+        if (log) res.json(log);
+        else res.json({});
+    });
+     
+    //--------------------------------------------------
+
+    _HTTP_APP.get('/log/filter/scope/:scope', function (req, res) {
+        const value = req.params.scope;
+        if (value) {
+            const a = $.LOG.f_filter('scope', value);
+            res.json(log);
+        } else
+            res.json([]);
+    });
+
+    _HTTP_APP.get('/log/filter/key/:key', function (req, res) {
+        const value = req.params.key;
+        if (value) {
+            const a = $.LOG.f_filter('key', value);
+            res.json(a);
+        } else
+            res.json([]);
+    });
+
+    //--------------------------------------------------
+
+    //#endregion
+
+    //#region [ /view-data/ raw | ext ]
+    
+    _HTTP_APP.get('/view-data/raw/:cache_name', function (req, res) {
         const api = req.params.cache_name;
         let a = [];
         if (api) a = $.CACHE_STORE.f_get___test('RAW', api.toUpperCase());
         res.json(a);
     });
-    _HTTP_APP.get('/ext/:cache_name', function (req, res) {
+    _HTTP_APP.get('/view-data/ext/:cache_name', function (req, res) {
         const api = req.params.cache_name;
         let a = [];
         if (api) a = $.CACHE_STORE.f_get___test('EXT', api.toUpperCase());
         res.json(a);
     });
 
+    //#endregion
+
+    //#region [ /cache-setting ]
+    
     _HTTP_APP.get('/cache-setting', function (req, res) {
 
         const val = $.CACHE_STORE.f_get___cache_setting();
@@ -74,17 +146,23 @@
     });
 
     _HTTP_APP.post('/cache-setting', function (req, res) {
-        const m_ = req.body;
-        //___log(m_); 
-
-        $.CACHE_STORE.f_set___cache_setting(m_);
-
+        const m_ = req.body; 
+        $.CACHE_STORE.f_set___cache_setting(m_); 
         res.json($.CACHE_STORE.f_get___cache_setting());
     });
 
-    _HTTP_APP.post('/api/cache-execute', function (req, res) {
-        //res.json({ ok: true, time: new Date() });
+    //#endregion
 
+    //#region [ /cache-index ]
+
+
+
+    //#endregion
+    
+    //#region [ API ]
+     
+    _HTTP_APP.post('/api/cache-execute', function (req, res) {
+        res.json({ ok: true, time: new Date() });
     });
 
     //#endregion

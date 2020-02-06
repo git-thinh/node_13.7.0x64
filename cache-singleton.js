@@ -1,18 +1,16 @@
 ﻿var cacheSingleton = function cacheSingleton() {
-    const PORT = 1000;
+    //#region [ VARIABLE ]
+
     const $ = this;
 
-    //#region [ LOG ]
+    const PORT = 1000;
+
+    const SCOPE = 'CACHE';
+    const ___log = (...agrs) => { if ($.LOG) $.LOG.f_write('INFO', SCOPE, '', ...agrs); }
+    const ___log_key = (key, ...agrs) => { if ($.LOG) $.LOG.f_write('INFO', SCOPE, key, ...agrs); }
+    const ___log_error = (key, ...agrs) => { if ($.LOG) $.LOG.f_write('ERR', SCOPE, key, ...agrs); } 
 
     const ___yyyyMMddHHmmss = () => new Date().toISOString().slice(-24).replace(/\D/g, '').slice(0, 8) + '_' + new Date().toTimeString().split(' ')[0].replace(/\D/g, '');
-
-    const ___log = (...agrs) => console.log('CACHE: ', ...agrs);
-    const ___log_tcp_init = (...agrs) => console.log('TCP_INIT: ', ...agrs);
-    const ___log_index = (...agrs) => console.log('INDEX: ', ...agrs);
-
-    //#endregion
-
-    //#region [ VARIABLE ]
 
     const _ = require('lodash');
 
@@ -45,7 +43,7 @@
             $.CACHE_DATA_RAW[cache_name] = json[cache_name];
         }
 
-        ___log_tcp_init('Receive buffer: ' + a.join(', ') + ' Size = ' + buf.length + ' at ' + new Date().toLocaleString() + ' | ', TCP_INIT_BUF_RECEIVE_COUNTER, TCP_INIT_BUF_TOTAL);
+        ___log_key('CACHE_BUFFER_COMPLETE', 'Receive buffer: ' + a.join(', ') + ' Size = ' + buf.length + ' at ' + new Date().toLocaleString() + ' | ', TCP_INIT_BUF_RECEIVE_COUNTER, TCP_INIT_BUF_TOTAL);
 
         if (TCP_INIT_BUF_TOTAL == TCP_INIT_BUF_RECEIVE_COUNTER) _TCP_INIT___on_done();
     };
@@ -71,7 +69,7 @@
         const chunks_ = [];
         let last_ = [];
 
-        //___log_tcp_init('Begin connect at ' + new Date().toLocaleString());
+        ___log_key('CACHE_BUFFER_START','Begin connect at ' + new Date().toLocaleString());
 
         socket_.on('error', function (error) {
             $.IS_BUSY = false;
@@ -90,7 +88,7 @@
 
             if (done) {
                 TCP_INIT_BUF_TOTAL = TCP_INIT_BUF_CONNECT_COUNTER - 1;
-                //___log_tcp_init('BUFFER RECEIVE OK: ', TCP_INIT_BUF_TOTAL);
+                ___log_key('CACHE_BUFFER_DONE','BUFFER RECEIVE OK: ', TCP_INIT_BUF_TOTAL);
                 socket_.end();
             } else {
                 const buf = Buffer.concat(chunks_);
@@ -163,7 +161,7 @@
     };
 
     //#endregion
-
+    
     //#region [ CACHE SETTING ]
 
     this.f_get___cache_setting = function () { return this.CACHE_SETTING; };
@@ -174,6 +172,7 @@
         if (config_) {
             for (var key in config_) {
                 switch (key) {
+                    case 'log':
                     case 'valid':
                     case 'caption':
                     case 'plugin':
@@ -187,6 +186,9 @@
                 }
 
                 switch (key) {
+                    case 'log':
+                        $.LOG.f_setup_update();
+                        break;
                     case 'valid':
                         break;
                     case 'caption':
@@ -272,7 +274,7 @@
     };
 
     this.f_cache___index_reset_all = function () {
-        ___log_index('Start ... ' + new Date().toLocaleString());
+        ___log_key('INDEX', 'Start ... ' + new Date().toLocaleString());
 
         const setting = $.CACHE_SETTING;
         const master_name = setting.master_name;
@@ -356,7 +358,7 @@
 
         }
 
-        ___log_index('Complete at ' + new Date().toLocaleString());
+        ___log_key('INDEX','Complete at ' + new Date().toLocaleString());
     }; 
 
     //#endregion
