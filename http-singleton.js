@@ -32,7 +32,7 @@
     const _IO = require('socket.io')(_HTTP_SERVER);
 
     //--------------------------------------------------------------------------------------------    
-    //_HTTP_APP.use(_HTTP_EXPRESS.static(_PATH.join(__dirname, 'htdocs')));
+    _HTTP_APP.use(_HTTP_EXPRESS.static(_PATH.join(__dirname, 'htdocs')));
 
     _HTTP_APP.use(_HTTP_BODY_PARSER.json());
     _HTTP_APP.use((error, req, res, next) => {
@@ -47,9 +47,9 @@
 
     //#endregion
 
-    //#region [ / ]
+    //#region [ /info ]
 
-    _HTTP_APP.get('/', function (req, res) {
+    _HTTP_APP.get('/info', function (req, res) {
         res.json($.INFO);
     });
 

@@ -72,7 +72,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\NodeJS\node_13.7.0x64\libs\restbed_x86-windows\include;D:\NodeJS\node_13.7.0x64\libs\leveldb_x86-windows\include;D:\NodeJS\node_13.7.0x64\libs\asio_x86-windows\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\NodeJS\node_13.7.0x64\libs\restbed_x86-windows\include;D:\NodeJS\node_13.7.0x64\libs\leveldb_x86-windows\include;D:\NodeJS\node_13.7.0x64\libs\asio_x86-windows\include;D:\NodeJS\node_13.7.0x64\libs\nlohmann-json_x86-windows\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\NodeJS\node_13.7.0x64\libs\leveldb_x86-windows\debug\lib;D:\NodeJS\node_13.7.0x64\libs\restbed_x86-windows\debug\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

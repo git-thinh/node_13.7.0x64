@@ -6,6 +6,11 @@
 
 #include <restbed>
 
+#include <nlohmann/json.hpp>
+// for convenience
+using json = nlohmann::json;
+
+
 using namespace restbed;
 using namespace std;
 
@@ -31,7 +36,7 @@ void post_method_handler(const shared_ptr< Session > session)
 
 	if (content_length == 0)
 	{
-		session->close(OK, "0", { { "Content-Length", "1" } });
+		session->close(OK, "", { { "Content-Length", "0" } });
 	}
 	else {
 		session->fetch(content_length, [](const shared_ptr< Session > session, const Bytes& body) {
@@ -41,23 +46,63 @@ void post_method_handler(const shared_ptr< Session > session)
 			string value = to_string2(body);
 
 			//fprintf(stdout, "%.*s\n", size, buf);
-			std::cout << key << " = " << value << std::endl;
+			//std::cout << key << " = " << value << std::endl;
 			
 			if (key.length() == 0 || size == 0)
 			{
-				session->close(OK, "0", { { "Content-Length", "1" } });
+				session->close(OK, "", { { "Content-Length", "0" } });
 			}
 			else {
 				leveldb::Status s = db->Put(leveldb::WriteOptions(), key, value);
 				if (s.ok()) {
-					session->close(OK, "1", { { "Content-Length", "1" } });
+					session->close(OK, "OK", { { "Content-Length", "2" } });
 				}
 				else {
-					session->close(OK, "0", { { "Content-Length", "1" } });
+					session->close(OK, "", { { "Content-Length", "0" } });
 				}
 			}
 		});
 	}
+}
+
+void get_all_keys_method_handler(const shared_ptr< Session > session)
+{
+	vector<string> keys;
+	leveldb::Iterator* it = db->NewIterator(leveldb::ReadOptions());
+	for (it->SeekToFirst(); it->Valid(); it->Next()) {
+		//cout << it->key().ToString() << ": " << it->value().ToString() << endl;
+		keys.push_back(it->key().ToString());
+	}
+	//assert(it->status().ok());  // Check for any errors found during the scan
+	bool ok = it->status().ok();
+	delete it;
+
+	if (ok) {
+		json j = keys;
+		std::string value = j.dump(4);
+		session->close(OK, value, { { "Content-Length", to_string(value.length()) }, { "Content-Type", "application/json" } });
+	}else 
+		session->close(OK, "[]", { { "Content-Length", "2" }, { "Content-Type", "application/json" } });
+}
+
+void get_all_keys_values_method_handler(const shared_ptr< Session > session)
+{
+	json j;
+	leveldb::Iterator* it = db->NewIterator(leveldb::ReadOptions());
+	for (it->SeekToFirst(); it->Valid(); it->Next()) {
+		//cout << it->key().ToString() << ": " << it->value().ToString() << endl;
+		j[it->key().ToString()] = it->value().ToString();
+	}
+	//assert(it->status().ok());  // Check for any errors found during the scan
+	bool ok = it->status().ok();
+	delete it;
+
+	if (ok) {
+		std::string value = j.dump(4);
+		session->close(OK, value, { { "Content-Length", to_string(value.length()) }, { "Content-Type", "application/json" } });
+	}
+	else
+		session->close(OK, "[]", { { "Content-Length", "2" }, { "Content-Type", "application/json" } });
 }
 
 void get_method_handler(const shared_ptr< Session > session)
@@ -68,6 +113,16 @@ void get_method_handler(const shared_ptr< Session > session)
 		leveldb::Status s = db->Get(leveldb::ReadOptions(), key, &value);
 		if (s.ok()) 
 			session->close(OK, value, { { "Content-Length", to_string(value.length()) }, { "Content-Type", "text/plain" } });
+		else session->close(OK, "", { { "Content-Length", "0" } });
+	}
+	else session->close(OK, "", { { "Content-Length", "0" } });
+}
+void get_remove_method_handler(const shared_ptr< Session > session)
+{
+	string key = session->get_request()->get_query_parameter("key", "");
+	if (key.length() > 0) {
+		leveldb::Status s = db->Delete(leveldb::WriteOptions(), key);
+		if (s.ok()) session->close(OK, "OK", { { "Content-Length", "2" } });
 		else session->close(OK, "", { { "Content-Length", "0" } });
 	}
 	else session->close(OK, "", { { "Content-Length", "0" } });
@@ -109,6 +164,9 @@ void httpServer_Start(int argc, char** argv) {
 	resource->set_path("/");
 	resource->set_method_handler("GET", get_method_handler);
 	resource->set_method_handler("POST", post_method_handler);
+	resource->set_method_handler("DELETE", get_remove_method_handler);
+	resource->set_method_handler("PUT", get_all_keys_method_handler);
+	resource->set_method_handler("OPTIONS", get_all_keys_values_method_handler);
 
 	auto settings = make_shared<Settings>();
 	settings->set_port(port);
