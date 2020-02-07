@@ -1,0 +1,447 @@
+{
+	"info": {
+		"_postman_id": "77115731-34f3-4f6e-8657-ccad2f7c30a9",
+		"name": "CACHE_ENGINE_V1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "log",
+			"item": [
+				{
+					"name": "log",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:12345/log",
+							"host": [
+								"localhost"
+							],
+							"port": "12345",
+							"path": [
+								"log"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "log/keys",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:12345/log/keys",
+							"host": [
+								"localhost"
+							],
+							"port": "12345",
+							"path": [
+								"log",
+								"keys"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "log/filter/key/INDEX",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:12345/log/filter/key/CACHE_JOIN_1N",
+							"host": [
+								"localhost"
+							],
+							"port": "12345",
+							"path": [
+								"log",
+								"filter",
+								"key",
+								"CACHE_JOIN_1N"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "log/scopes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:12345/log/scopes",
+							"host": [
+								"localhost"
+							],
+							"port": "12345",
+							"path": [
+								"log",
+								"scopes"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "cache setting",
+			"item": [
+				{
+					"name": "cache-setting",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:12345/cache-setting",
+							"host": [
+								"localhost"
+							],
+							"port": "12345",
+							"path": [
+								"cache-setting"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "change all setting",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"log\": {\r\n        \"enable\": true,\r\n        \"max_size\": 1000,\r\n        \"broadcast\": {\r\n            \"keys\": [\r\n                \"*\"\r\n            ],\r\n            \"udp_log\": [\r\n                \"127.0.0.1\",\r\n                2020,\r\n                true\r\n            ],\r\n            \"udp_error\": [\r\n                \"127.0.0.1\",\r\n                2121,\r\n                true\r\n            ]\r\n        }\r\n    },\r\n    \"master_name\": \"POL_PAWN\",\r\n    \"connect_string\": {\r\n        \"db_123\": {\r\n            \"user\": \"sa\",\r\n            \"password\": \"dev@123\",\r\n            \"server\": \"192.168.10.54\",\r\n            \"database\": \"POL_20191230\",\r\n            \"connectionTimeout\": 300000,\r\n            \"requestTimeout\": 300000,\r\n            \"pool\": {\r\n                \"idleTimeoutMillis\": 300000,\r\n                \"max\": 10\r\n            },\r\n            \"scripts\": [\r\n                \"POL_PAWN\",\r\n                \"POL_CUSTOMER\",\r\n                \"POL_PROCESS\",\r\n                \"POL_ASSET_TYPE\",\r\n                \"POL_AREA\",\r\n                \"POL_CHANNEL\",\r\n                \"POL_PRIORITY\",\r\n                \"POL_NOTIFY\",\r\n                \"POL_NOTIFY_STATE\",\r\n                \"POL_REASON_FAIL\",\r\n                \"POL_STEP\",\r\n                \"POL_SUPPORT_SCHEDULE\",\r\n                \"POL_SYS_EMAIL\",\r\n                \"POL_SYS_SMS\"\r\n            ]\r\n        },\r\n        \"db_amz\": {\r\n            \"user\": \"mobile\",\r\n            \"password\": \"HjdbFV7jos9bc6lw\",\r\n            \"server\": \"192.168.10.37\",\r\n            \"database\": \"Release_FB51_App\",\r\n            \"connectionTimeout\": 300000,\r\n            \"requestTimeout\": 300000,\r\n            \"pool\": {\r\n                \"idleTimeoutMillis\": 300000,\r\n                \"max\": 10\r\n            },\r\n            \"scripts\": [\r\n                \"GROUP\",\r\n                \"POS_SYS_CONFIG\",\r\n                \"SHOP\",\r\n                \"REGION\",\r\n                \"USER\"\r\n            ]\r\n        }\r\n    },\r\n    \"script\": {\r\n        \"POL_PAWN\": \"SELECT top 5000 *,isnull( (select * from [SplitStringToTable](str_url,'&')),'') as str_campaign FROM mobile.pol_pawn order by id desc\",\r\n        \"POL_CUSTOMER\": \"SELECT top 5000 * FROM mobile.pol_customer order by id desc\",\r\n        \"POL_PROCESS\": \"SELECT top 5000 * FROM mobile.pol_online_process order by int_pol_pawn_id desc\",\r\n        \"GROUP\": \"SELECT GroupID as id, ParentID as parent_id, Code as str_code, [Name] as str_name, [Status] as int_status FROM [pos].[Group] where IsShop=1 or GroupID=44 or GroupID=58\",\r\n        \"POS_SYS_CONFIG\": \"SELECT 0 as id, [Code] as str_code, [Type] as str_type, [Value] as str_value, [Name] as str_name, [Status] as int_status FROM [pos].[SysConfig] where Type='PawnOnlineOption'\",\r\n        \"SHOP\": \"select shopid as id, code, [name] as str_name from pos.shopdetail\",\r\n        \"REGION\": \"select [RegionID] as id, [Name] as str_name, isnull([ParentID],0) as int_pid, isnull((select [Name] from pos.region as b where b.[RegionID] = a.[ParentID] ),'') as str_parent_name from pos.region as a where [status]=1\",\r\n        \"USER\": \"SELECT  u.UserID as id, ISNULL(u.CalloutToken,'') as str_call_out_tooken, u.ApproveLevel as int_approve_level,  ISNULL(u.UserPosition,0) as str_user_position, ug.GroupID as group_id, u.UserName as str_user_name, ISNULL( u.[POLStatus],0) as int_pol_status, ISNULL( [POLRegion],0) as int_pol_region, g.[Name] as str_group_name, u.UserFullName as str_full_name, '12345@abc' as str_pass_word, u.[UserPass] as str_pass, (CASE WHEN u.ApproveLevel = 1 AND UserPosition = 4 THEN N'Nhân viên cửa hàng' WHEN u.ApproveLevel = 1 AND UserPosition = 3 THEN N'Quản lý CH' WHEN u.ApproveLevel = 2 THEN 'QLKV' END) as str_possition, (CASE WHEN ug.GroupID = 44  THEN N'1' else (select top(1) s.ShopID from pos.[GroupShop] gs  inner JOIN pos.[ShopDetail] s ON gs.ShopCode = s.Code where g.GroupID = gs.GroupID) end) as shop_id, (CASE WHEN ug.GroupID = 44  THEN N'Hỗ trợ khách hàng' else  (select top(1) s.[Name] from pos.[GroupShop] gs  inner JOIN pos.[ShopDetail] s ON gs.ShopCode = s.Code where g.GroupID = gs.GroupID) end) as str_shop_name, (case u.UserID when 617 then 1 else 0 end) as bit_admin_caller ,isnull(u.UserEmail,'') as str_user_email FROM [pos].[User]  u left JOIN pos.[UserGroup] ug ON ug.UserID = u.UserID left JOIN pos.[Group] g ON ug.GroupID = g.GroupID  AND g.STATUS = 1 where u.Status =1\",\r\n        \"POL_ASSET_TYPE\": \"SELECT * FROM mobile.pol_asset\",\r\n        \"POL_AREA\": \"select * from mobile.pol_area\",\r\n        \"POL_CHANNEL\": \"select * from mobile.pol_channel\",\r\n        \"POL_PRIORITY\": \"SELECT * FROM [mobile].[pol_priority]\",\r\n        \"POL_NOTIFY\": \"SELECT * FROM mobile.pol_notify order by int_date,int_time desc\",\r\n        \"POL_NOTIFY_STATE\": \"SELECT * FROM mobile.pol_notify_state order by int_date,int_time desc\",\r\n        \"POL_REASON_FAIL\": \"SELECT  * FROM mobile.pol_reason_fail\",\r\n        \"POL_STEP\": \"select * from mobile.pol_step\",\r\n        \"POL_SUPPORT_SCHEDULE\": \"SELECT  * FROM mobile.pol_support_schedule\",\r\n        \"POL_SYS_EMAIL\": \"SELECT * FROM [mobile].[sys_email]\",\r\n        \"POL_SYS_SMS\": \"SELECT * FROM [mobile].[sys_sms]\"\r\n    },\r\n    \"join_1_1\": {\r\n        \"POL_PAWN\": {\r\n            \"user_created_id\": {\r\n                \"name\": \"USER\",\r\n                \"alias\": \"user_created\"\r\n            },\r\n            \"cus_created_id\": {\r\n                \"name\": \"POL_CUSTOMER\",\r\n                \"alias\": \"cus_created\"\r\n            },\r\n            \"customer_id\": {\r\n                \"name\": \"POL_CUSTOMER\",\r\n                \"alias\": \"customer\"\r\n            },\r\n            \"caller_shop_id\": {\r\n                \"name\": \"USER\",\r\n                \"alias\": \"caller_shop\"\r\n            },\r\n            \"caller_online_id\": {\r\n                \"name\": \"USER\",\r\n                \"alias\": \"caller_online\"\r\n            },\r\n            \"group_id\": {\r\n                \"name\": \"GROUP\",\r\n                \"alias\": \"group\"\r\n            }\r\n        }\r\n    },\r\n    \"join_1_n\": {\r\n        \"POL_PAWN\": {\r\n            \"___list_support_schedule\": \"POL_SUPPORT_SCHEDULE.int_pawn_online_id\",\r\n            \"___list_online_process\": \"POL_PROCESS.int_pol_pawn_id\"\r\n        }\r\n    },\r\n    \"full_text_search\": {\r\n        \"POL_PAWN\": {\r\n            \"ids\": \",id,customer_id,int_pawn_id_pos,\",\r\n            \"ascii\": \",lng_money,int_days,int_created_date,str_channel_name,\",\r\n            \"utf8\": \",str_asset_type_name,str_channel_name,str_city_name,str_district_name,str_description,str_trademark,\",\r\n            \"org\": \",str_asset_type_name,\"\r\n        },\r\n        \"POL_CUSTOMER\": {\r\n            \"ids\": \",id,\",\r\n            \"ascii\": \",str_phone,str_email,int_created_date,str_name,\",\r\n            \"utf8\": \",str_name,str_address,\",\r\n            \"org\": \",str_name,str_address,\"\r\n        },\r\n        \"POL_CHANNEL\": {\r\n            \"ids\": \",id,\",\r\n            \"ascii\": \",str_name,\",\r\n            \"utf8\": \",str_name,\"\r\n        },\r\n        \"REGION\": {\r\n            \"ids\": \",id,\",\r\n            \"ascii\": \",str_name,\",\r\n            \"utf8\": \",str_name,\"\r\n        },\r\n        \"SHOP\": {\r\n            \"ids\": \",id,\",\r\n            \"ascii\": \",str_name,\",\r\n            \"utf8\": \",str_name,\"\r\n        },\r\n        \"USER\": {\r\n            \"ids\": \",id,shop_id,group_id,\",\r\n            \"ascii\": \",str_user_name,str_possition,str_shop_name,\",\r\n            \"utf8\": \",str_full_name,str_shop_name,\"\r\n        },\r\n        \"GROUP\": {\r\n            \"ids\": \",id,\",\r\n            \"ascii\": \",str_name,str_code,\",\r\n            \"utf8\": \",str_name,str_code,\"\r\n        },\r\n        \"POL_ASSET_TYPE\": {\r\n            \"ids\": \",id,\",\r\n            \"ascii\": \",str_name,\",\r\n            \"utf8\": \",str_name,\"\r\n        },\r\n        \"POL_PRIORITY\": {\r\n            \"ids\": \",,\",\r\n            \"ascii\": \",str_priority_name,\",\r\n            \"utf8\": \",str_priority_name,\"\r\n        },\r\n        \"POL_REASON_FAIL\": {\r\n            \"ids\": \",,\",\r\n            \"ascii\": \",str_canceled_reason,\",\r\n            \"utf8\": \",str_canceled_reason,\"\r\n        }\r\n    },\r\n    \"valid\": {\r\n        \"MAX_SIZE\": {},\r\n        \"NOT_EMPTY\": {\r\n            \"func\": \"\",\r\n            \"message\": \"\"\r\n        },\r\n        \"NOT_NULL\": {},\r\n        \"NOT_EQUAL_ZERO\": {}\r\n    },\r\n    \"caption\": {},\r\n    \"plugin\": {\r\n        \"notify___pushqueue\": {\r\n            \"command\": {\r\n                \"title\": \"Đẩy vào hàng đợi bắn notify\"\r\n            }\r\n        },\r\n        \"user___addnew\": {\r\n            \"data\": {\r\n                \"id\": \"MAX___USER.id\",\r\n                \"str_call_out_tooken\": \"\",\r\n                \"int_approve_level\": 1,\r\n                \"str_user_position\": \"0\",\r\n                \"group_id\": null,\r\n                \"str_user_name\": \"hndd\",\r\n                \"int_pol_status\": 0,\r\n                \"int_pol_region\": 0,\r\n                \"str_group_name\": null,\r\n                \"str_full_name\": \"F88 Đặng Dung\",\r\n                \"str_pass_word\": \"12345@abc\",\r\n                \"str_pass\": \"4QrcOUm6Wau+VuBX8g+IPg==\",\r\n                \"str_possition\": null,\r\n                \"shop_id\": null,\r\n                \"str_shop_name\": null,\r\n                \"bit_admin_caller\": 0,\r\n                \"str_user_email\": \"vuongthigiang@f88.vn\",\r\n                \"int_dt_create\": \"YYYYMMDDHHMMSS\",\r\n                \"int_date_create\": \"YYYYMMDD\",\r\n                \"int_time_create\": \"HHMMSS\",\r\n                \"___i\": 0\r\n            },\r\n            \"valid\": {\r\n                \"str_call_out_tooken\": [\r\n                    {\r\n                        \"name\": \"NOT_EMPTY\",\r\n                        \"config\": []\r\n                    }\r\n                ],\r\n                \"int_approve_level\": [\r\n                    {\r\n                        \"name\": \"NOT_NULL\",\r\n                        \"config\": []\r\n                    },\r\n                    {\r\n                        \"name\": \"NOT_EQUAL_ZERO\",\r\n                        \"config\": []\r\n                    },\r\n                    {\r\n                        \"name\": \"MAX_SIZE\",\r\n                        \"config\": [\r\n                            30\r\n                        ]\r\n                    }\r\n                ],\r\n                \"str_user_position\": \"MAX_SIZE\",\r\n                \"group_id\": \"\",\r\n                \"str_user_name\": \"hndd\",\r\n                \"int_pol_status\": \"\",\r\n                \"int_pol_region\": \"\",\r\n                \"str_group_name\": \"\",\r\n                \"str_full_name\": \"\",\r\n                \"str_pass_word\": \"\",\r\n                \"str_pass\": \"\",\r\n                \"str_possition\": \"\",\r\n                \"shop_id\": \"\",\r\n                \"str_shop_name\": \"\",\r\n                \"bit_admin_caller\": \"\",\r\n                \"str_user_email\": \"\",\r\n                \"___i\": 0\r\n            },\r\n            \"command\": [\r\n                {\r\n                    \"name\": \"notify___pushqueue\",\r\n                    \"config\": {}\r\n                }\r\n            ]\r\n        },\r\n        \"pol_pawn___addnew\": {\r\n            \"data\": {},\r\n            \"valid\": {},\r\n            \"command\": \"\"\r\n        },\r\n        \"pol_pawn___update\": {},\r\n        \"pol_pawn___remove\": {},\r\n        \"pol_customer___addnew\": {},\r\n        \"pol_process___addnew\": {},\r\n        \"pol_channel___addnew\": {},\r\n        \"pol_notify___addnew\": {}\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:12345/cache-setting",
+							"host": [
+								"localhost"
+							],
+							"port": "12345",
+							"path": [
+								"cache-setting"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "change log setting",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"log\": {\r\n        \"enable\": true,\r\n        \"max_size\": 1000,\r\n        \"broadcast\": {\r\n            \"keys\": [\r\n                \"*\"\r\n            ],\r\n            \"udp_log\": [\r\n                \"127.0.0.1\",\r\n                2020,\r\n                true\r\n            ],\r\n            \"udp_error\": [\r\n                \"127.0.0.1\",\r\n                2121,\r\n                true\r\n            ]\r\n        }\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:12345/cache-setting",
+							"host": [
+								"localhost"
+							],
+							"port": "12345",
+							"path": [
+								"cache-setting"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "30bce906-5fbe-4401-9675-2c9300a5a1e0",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "5e128230-e564-42cf-b324-1322750c0b5b",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "view data",
+			"item": [
+				{
+					"name": "raw/pol_pawn",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:12345/view-data/raw/pol_pawn",
+							"host": [
+								"localhost"
+							],
+							"port": "12345",
+							"path": [
+								"view-data",
+								"raw",
+								"pol_pawn"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "raw/POL_SUPPORT_SCHEDULE",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "localhost:12345/view-data/raw/POL_SUPPORT_SCHEDULE",
+							"host": [
+								"localhost"
+							],
+							"port": "12345",
+							"path": [
+								"view-data",
+								"raw",
+								"POL_SUPPORT_SCHEDULE"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "raw/POL_SUPPORT_SCHEDULE/:id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "localhost:12345/view-data/raw/POL_SUPPORT_SCHEDULE/10",
+							"host": [
+								"localhost"
+							],
+							"port": "12345",
+							"path": [
+								"view-data",
+								"raw",
+								"POL_SUPPORT_SCHEDULE",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "raw/pol_pawn/:id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:12345/view-data/raw/pol_pawn/118972",
+							"host": [
+								"localhost"
+							],
+							"port": "12345",
+							"path": [
+								"view-data",
+								"raw",
+								"pol_pawn",
+								"118972"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ext/pol_pawn",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:12345/view-data/ext/pol_pawn",
+							"host": [
+								"localhost"
+							],
+							"port": "12345",
+							"path": [
+								"view-data",
+								"ext",
+								"pol_pawn"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ext/pol_pawn/:id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:12345/view-data/ext/pol_pawn/118972",
+							"host": [
+								"localhost"
+							],
+							"port": "12345",
+							"path": [
+								"view-data",
+								"ext",
+								"pol_pawn",
+								"118972"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "cache-join-1n",
+			"item": [
+				{
+					"name": "get keys cache-join-1n",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:12345/cache-join-1n/key/all",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "12345",
+							"path": [
+								"cache-join-1n",
+								"key",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "cache-join-1n all data",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:12345/cache-join-1n/all",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "12345",
+							"path": [
+								"cache-join-1n",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "cache-join-1n/POL_SUPPORT_SCHEDULE",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:12345/cache-join-1n/key/POL_SUPPORT_SCHEDULE",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "12345",
+							"path": [
+								"cache-join-1n",
+								"key",
+								"POL_SUPPORT_SCHEDULE"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "cache-join-1n/POL_SUPPORT_SCHEDULE/:id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:12345/cache-join-1n/key/POL_SUPPORT_SCHEDULE/112199",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "12345",
+							"path": [
+								"cache-join-1n",
+								"key",
+								"POL_SUPPORT_SCHEDULE",
+								"112199"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
