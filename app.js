@@ -1,7 +1,6 @@
 ﻿const ___CACHE_DATA_RAW = {};
 const ___CACHE_DATA_EXT = {};
 const ___CACHE_INDEX = {};
-
 const ___CACHE_JOIN_1N = {};
 
 const ___CACHE_SETTING = {
@@ -269,7 +268,7 @@ let _HTTP_STORE = require('./http-singleton.js');
 
     _HTTP_STORE.LOG = _LOG;
     _HTTP_STORE.INFO = ___INFO;
-    _HTTP_STORE.CACHE_STORE = _CACHE_STORE;
+    _HTTP_STORE.CACHE_STORE = _CACHE_STORE; 
     _HTTP_STORE.CACHE_SETTING = ___CACHE_SETTING;
 })();
 
@@ -277,6 +276,7 @@ _CACHE_STORE.on_ready_shared = function (add_port_init, add_port_update) {
     ___INFO.TCP_CACHE_INIT = add_port_init;
     ___INFO.TCP_CACHE_UPDATE = add_port_update;
 
+    _LOG.f_console_clear();
     const s = ___INFO.APP_NAME + ': Starting at ' + new Date().toLocaleString() +
         ' - HTTP_API: ' + ___INFO.HTTP_API.port + ', TCP_CACHE_INIT: ' + ___INFO.TCP_CACHE_INIT.port + ', TCP_CACHE_UPDATE: ' + ___INFO.TCP_CACHE_UPDATE.port;
     console.log(s);

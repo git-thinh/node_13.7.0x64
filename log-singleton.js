@@ -3,6 +3,8 @@
 
     const $ = this;
 
+    const _ = require('lodash');
+
     const _A_LOG = [];
     const _A_ERR = [];
 
@@ -23,6 +25,30 @@
     var _DGRAM = require('dgram');
 
     //#endregion
+
+    this.f_console_clear = function () {
+        if (_UDP_LOG == null || _UDP_LOG.length < 2 || _UDP_LOG[2] == false) {
+            ;
+        } else {
+            var buf = Buffer.from('~');
+            const udp = _DGRAM.createSocket('udp4');
+            udp.send(buf, 0, buf.length, _UDP_LOG[1], _UDP_LOG[0], (err) => {
+                // Send success
+                udp.close();
+            });
+        }
+
+        if (_UDP_ERROR == null || _UDP_ERROR.length < 2 || _UDP_ERROR[2] == false) {
+            ;
+        } else { 
+            var buf = Buffer.from('~');
+            const udp = _DGRAM.createSocket('udp4');
+            udp.send(buf, 0, buf.length, _UDP_ERROR[1], _UDP_ERROR[0], (err) => {
+                // Send success
+                udp.close();
+            });
+        }
+    };
 
     //--------------------------------------------------------------------------------------------
 
@@ -106,7 +132,7 @@
 
     new _JOB('* * * * * *', function () {
         if (_A_ERR.length > 0) {
-            if (_UDP_ERROR.length < 3 || _UDP_ERROR[2] == false) return;
+            if (_UDP_ERROR == null || _UDP_ERROR.length < 2 || _UDP_ERROR[2] == false) return;
 
             const m = _A_ERR.shift();
             var buf = Buffer.from(JSON.stringify(m));
@@ -120,7 +146,7 @@
 
     new _JOB('* * * * * *', function () {
         if (_A_LOG.length > 0) {
-            if (_UDP_LOG.length < 3 || _UDP_LOG[2] == false) return;
+            if (_UDP_LOG == null || _UDP_LOG.length < 2 || _UDP_LOG[2] == false) return;
 
             const m = _A_LOG.shift();
             let send = false;

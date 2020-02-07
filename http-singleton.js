@@ -1,20 +1,23 @@
 ﻿let httpSingleton = function httpSingleton() {
     //#region [ VARIABLE ]
-
     const $ = this;
+
+    const _ = require('lodash');
+
     const PORT = 12345;
 
     const SCOPE = 'API';
     const ___log = (...agrs) => { if ($.LOG) $.LOG.f_write('INFO', SCOPE, '', ...agrs); }
     const ___log_key = (key, ...agrs) => { if ($.LOG) $.LOG.f_write('INFO', SCOPE, key, ...agrs); }
-    const ___log_error = (key, ...agrs) => { if ($.LOG) $.LOG.f_write('ERR', SCOPE, key, ...agrs); } 
-    
+    const ___log_error = (key, ...agrs) => { if ($.LOG) $.LOG.f_write('ERR', SCOPE, key, ...agrs); }
+
     const ___guid = function () {
         return 'id-xxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
             var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
         });
     };
+
 
     //#endregion
 
@@ -93,7 +96,7 @@
         if (log) res.json(log);
         else res.json({});
     });
-     
+
     //--------------------------------------------------
 
     _HTTP_APP.get('/log/filter/scope/:scope', function (req, res) {
@@ -119,24 +122,28 @@
     //#endregion
 
     //#region [ /view-data/ raw | ext ]
-    
-    _HTTP_APP.get('/view-data/raw/:cache_name', function (req, res) {
+
+    _HTTP_APP.get('/view-data/:type/:cache_name', function (req, res) {
         const api = req.params.cache_name;
+        const type = req.params.type == 'RAW' ? 'RAW' : 'EXT';
         let a = [];
-        if (api) a = $.CACHE_STORE.f_get___test('RAW', api.toUpperCase());
+        if (api) a = $.CACHE_STORE.f_search___test(type, api.toUpperCase());
         res.json(a);
     });
-    _HTTP_APP.get('/view-data/ext/:cache_name', function (req, res) {
+
+    _HTTP_APP.get('/view-data/:type/:cache_name/:id', function (req, res) {
         const api = req.params.cache_name;
-        let a = [];
-        if (api) a = $.CACHE_STORE.f_get___test('EXT', api.toUpperCase());
-        res.json(a);
+        const type = req.params.type == 'RAW' ? 'RAW' : 'EXT';
+        const id = req.params.id;
+        let o = {};
+        if (api) o = $.CACHE_STORE.f_search___test_id(type, api.toUpperCase(), id);
+        res.json(o);
     });
 
     //#endregion
 
     //#region [ /cache-setting ]
-    
+
     _HTTP_APP.get('/cache-setting', function (req, res) {
 
         const val = $.CACHE_STORE.f_get___cache_setting();
@@ -146,8 +153,8 @@
     });
 
     _HTTP_APP.post('/cache-setting', function (req, res) {
-        const m_ = req.body; 
-        $.CACHE_STORE.f_set___cache_setting(m_); 
+        const m_ = req.body;
+        $.CACHE_STORE.f_set___cache_setting(m_);
         res.json($.CACHE_STORE.f_get___cache_setting());
     });
 
@@ -162,24 +169,42 @@
 
         res.json(val);
     });
-    
+
     //#endregion
 
     //#region [ /cache-join-1n ]
 
-
-    _HTTP_APP.get('/cache-join-1n', function (req, res) {
-
-        const val = $.CACHE_STORE.f_get___cache_setting();
-        //___log(val);
-
+    _HTTP_APP.get('/cache-join-1n/all', function (req, res) {
+        const val = $.CACHE_STORE.f_get___cache_join_1n_all();
         res.json(val);
     });
 
+    _HTTP_APP.get('/cache-join-1n/key/all', function (req, res) {
+        const val = $.CACHE_STORE.f_get___cache_join_1n_keys();
+        res.json(val);
+    });
+
+    _HTTP_APP.get('/cache-join-1n/key/:cache_name', function (req, res) {
+        const cache_name = req.params.cache_name;
+        if (cache_name) {
+            const val = $.CACHE_STORE.f_get___cache_join_1n_by_cache_name(cache_name);
+            res.json(val);
+        } else res.json([]);
+    });
+
+    _HTTP_APP.get('/cache-join-1n/key/:cache_name/:id', function (req, res) {
+        const cache_name = req.params.cache_name;
+        const id = req.params.id;
+        if (cache_name && id && id > 0) {
+            const val = $.CACHE_STORE.f_get___cache_join_1n_by_cache_name_id(cache_name, id);
+            res.json(val);
+        } else res.json([]);
+    });
+
     //#endregion
-    
+
     //#region [ API ]
-     
+
     _HTTP_APP.post('/api/cache-execute', function (req, res) {
         res.json({ ok: true, time: new Date() });
     });

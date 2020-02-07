@@ -8,7 +8,7 @@
     const SCOPE = 'CACHE';
     const ___log = (...agrs) => { if ($.LOG) $.LOG.f_write('INFO', SCOPE, '', ...agrs); }
     const ___log_key = (key, ...agrs) => { if ($.LOG) $.LOG.f_write('INFO', SCOPE, key, ...agrs); }
-    const ___log_error = (key, ...agrs) => { if ($.LOG) $.LOG.f_write('ERR', SCOPE, key, ...agrs); } 
+    const ___log_error = (key, ...agrs) => { if ($.LOG) $.LOG.f_write('ERR', SCOPE, key, ...agrs); }
 
     const ___yyyyMMddHHmmss = () => new Date().toISOString().slice(-24).replace(/\D/g, '').slice(0, 8) + '_' + new Date().toTimeString().split(' ')[0].replace(/\D/g, '');
 
@@ -69,7 +69,7 @@
         const chunks_ = [];
         let last_ = [];
 
-        ___log_key('CACHE_BUFFER_START','Begin connect at ' + new Date().toLocaleString());
+        ___log_key('CACHE_BUFFER_START', 'Begin connect at ' + new Date().toLocaleString());
 
         socket_.on('error', function (error) {
             $.IS_BUSY = false;
@@ -88,7 +88,7 @@
 
             if (done) {
                 TCP_INIT_BUF_TOTAL = TCP_INIT_BUF_CONNECT_COUNTER - 1;
-                ___log_key('CACHE_BUFFER_DONE','BUFFER RECEIVE OK: ', TCP_INIT_BUF_TOTAL);
+                ___log_key('CACHE_BUFFER_DONE', 'BUFFER RECEIVE OK: ', TCP_INIT_BUF_TOTAL);
                 socket_.end();
             } else {
                 const buf = Buffer.concat(chunks_);
@@ -161,7 +161,7 @@
     };
 
     //#endregion
-    
+
     //#region [ CACHE SETTING ]
 
     this.f_get___cache_setting = function () { return this.CACHE_SETTING; };
@@ -213,9 +213,48 @@
 
     //#endregion
 
-    //#region [ TEST ]
+    //#region [ CACHE JOIN 1N ]
 
-    this.f_get___test = function (type, cache_name) {
+    this.f_get___cache_join_1n_all = function () {
+        const j1n = $.CACHE_JOIN_1N;
+        if (j1n) return j1n;
+        return [];
+    };
+
+    this.f_get___cache_join_1n_by_cache_name = function (cache_name) {
+        const j1n = $.CACHE_JOIN_1N;
+
+        if (cache_name && j1n) {
+            const api = cache_name.toUpperCase();
+            if (j1n[api]) return j1n[api];
+        }
+
+        return [];
+    };
+
+    this.f_get___cache_join_1n_by_cache_name_id = function (cache_name, id) {
+        const j1n = $.CACHE_JOIN_1N;
+
+        if (cache_name && j1n) {
+            const api = cache_name.toUpperCase();
+            if (j1n[api] && j1n[api][id])
+                return j1n[api][id];
+        }
+
+        return [];
+    };
+
+    this.f_get___cache_join_1n_keys = function () {
+        const j1n = $.CACHE_JOIN_1N;
+        if (j1n) return Object.keys(j1n);
+        return [];
+    };
+
+    //#endregion
+
+    //#region [ TEST: SEACH DATA RAW, EXT ]
+
+    this.f_search___test = function (type, cache_name) {
         const is_raw = type && type.toUpperCase() == 'RAW';
 
         let a = [];
@@ -228,6 +267,21 @@
             a = _.filter(a, function (o_, i_) { return i_ < 10; });
 
         return a;
+    };
+
+    this.f_search___test_id = function (type, cache_name, id) {
+        const is_raw = type && type.toUpperCase() == 'RAW';
+
+        let a = [];
+        if (is_raw && $.CACHE_DATA_RAW[cache_name])
+            a = $.CACHE_DATA_RAW[cache_name];
+        else if ($.CACHE_DATA_EXT[cache_name])
+            a = $.CACHE_DATA_EXT[cache_name];
+
+        if (id && id > 0 && a.length > 0)
+            a = _.filter(a, function (o_) { return o_.id == Number(id); });
+
+        return a.length > 0 ? a[0] : {};
     };
 
     //#endregion
@@ -289,31 +343,42 @@
         if (raw && ext) {
             let i = 0, r, cf, a = [], ex = [], x;
 
-            const cache_names = _.filter(Object.keys(full_text_search), function (o_) { return o_ != master_name; });
+            const cache_names = _.filter(Object.keys(raw), function (o_) { return o_ != master_name; });
             if (master_name) cache_names.push(master_name);
-             
-            let j1n_cols = [], j1n_apis = [], j1n_colums = [];
+
+            let has_j1n = false; j1n_cols = [], j1n_apis = [], j1n_colums = [];
             if (master_name && join_1_n && join_1_n[master_name]) {
+                const cf_1_n = join_1_n[master_name];
                 j1n_cols = Object.keys(join_1_n[master_name]);
-                j1n_apis = j1n_cols.map(function (o_) { return join_1_1[o_].name; });
-                j1n_colums = j1n_cols.map(function (o_) { return join_1_1[o_].column; });
+                j1n_apis = j1n_cols.map(function (o_) { return cf_1_n[o_].name; });
+                j1n_colums = j1n_cols.map(function (o_) { return cf_1_n[o_].column; });
                 has_j1n = j1n_cols.length > 0;
+                ___log_key('CACHE_JOIN_1N', 'COLUMN', j1n_cols);
+                ___log_key('CACHE_JOIN_1N', 'APIS', j1n_apis);
+                ___log_key('CACHE_JOIN_1N', 'FIELDS', j1n_colums);
             }
 
             cache_names.forEach((cache_name) => {
+                const is_cacheMaster = master_name == cache_name && master_name != null;
+
                 inx[cache_name] = {};
                 cf = full_text_search[cache_name];
+                const has_fullTextSearch = (cf != null && cf != undefined);
                 a = raw[cache_name];
                 ex = [];
 
                 let index_j1n = j1n_apis.indexOf(cache_name);
-                if (index_j1n != -1) j1n[cache_name] = {};
+                const cacheName_is_Index_J1n = index_j1n != -1;
+                if (cacheName_is_Index_J1n) {
+                    j1n[cache_name] = {};
+                    ___log_key('CACHE_JOIN_1N', cache_name + ' INDEXS = ' + index_j1n);
+                }
 
-                if (cf && a && a.length > 0) {
+                if (a && a.length > 0) {
                     let join_1_1, join_1_n, col_11 = [], api_11 = [], alias_11 = [];
                     let has_join_11 = false;
 
-                    if (master_name && cache_name == master_name) {
+                    if (is_cacheMaster) {
                         if (setting.join_1_1) join_1_1 = setting.join_1_1[master_name];
                         if (setting.join_1_n) join_1_n = setting.join_1_n[master_name];
                         if (join_1_1) {
@@ -327,10 +392,12 @@
                     let c_ids = [], c_ascii = [], c_utf8 = [], c_org = [];
                     let ids, ascii, utf8, org;
 
-                    if (cf.ids) c_ids = _.filter(cf.ids.split(','), function (o_) { return o_.length > 0; });
-                    if (cf.ascii) c_ascii = _.filter(cf.ascii.split(','), function (o_) { return o_.length > 0; });
-                    if (cf.utf8) c_utf8 = _.filter(cf.utf8.split(','), function (o_) { return o_.length > 0; });
-                    if (cf.org) c_org = _.filter(cf.org.split(','), function (o_) { return o_.length > 0; });
+                    if (has_fullTextSearch) {
+                        if (cf.ids) c_ids = _.filter(cf.ids.split(','), function (o_) { return o_.length > 0; });
+                        if (cf.ascii) c_ascii = _.filter(cf.ascii.split(','), function (o_) { return o_.length > 0; });
+                        if (cf.utf8) c_utf8 = _.filter(cf.utf8.split(','), function (o_) { return o_.length > 0; });
+                        if (cf.org) c_org = _.filter(cf.org.split(','), function (o_) { return o_.length > 0; });
+                    }
 
                     for (i = 0; i < a.length; i++) {
                         r = a[i];
@@ -338,12 +405,14 @@
 
                         x = { ___i: i, id: r.id };
 
-                        ids = (_.map(c_ids, function (c_) { return r[c_]; })).join(' ').trim();
-                        ascii = (_.map(c_ascii, function (c_) { return r[c_]; })).join(' ').trim();
-                        utf8 = (_.map(c_utf8, function (c_) { return r[c_]; })).join(' ').trim();
-                        org = (_.map(c_org, function (c_) { return r[c_]; })).join(' ').trim();
+                        if (has_fullTextSearch) {
+                            ids = (_.map(c_ids, function (c_) { return r[c_]; })).join(' ').trim();
+                            ascii = (_.map(c_ascii, function (c_) { return r[c_]; })).join(' ').trim();
+                            utf8 = (_.map(c_utf8, function (c_) { return r[c_]; })).join(' ').trim();
+                            org = (_.map(c_org, function (c_) { return r[c_]; })).join(' ').trim();
+                        }
 
-                        if (cache_name == master_name) {
+                        if (is_cacheMaster) {
                             if (has_join_11) {
                                 col_11.map((c_, i_) => {
                                     if (r[c_]) x[alias_11[i_]] = inx[api_11[i_]][r[c_]];
@@ -351,26 +420,52 @@
                             }
                         }
 
-                        if (ids && ids.length > 0) ids = ' ' + ids + ' ';
-                        if (ascii && ascii.length > 0) ascii = ' ' + ___convert_unicode_to_ascii(ascii) + ' ';
-                        if (utf8 && utf8.length > 0) utf8 = ' ' + utf8.toLowerCase().replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g, " ").replace(/ + /g, " ") + ' ';
-                        if (org && org.length > 0) org = ' ' + org + ' ';
+                        if (has_fullTextSearch) {
+                            if (ids && ids.length > 0) ids = ' ' + ids + ' ';
+                            if (ascii && ascii.length > 0) ascii = ' ' + ___convert_unicode_to_ascii(ascii) + ' ';
+                            if (utf8 && utf8.length > 0) utf8 = ' ' + utf8.toLowerCase().replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g, " ").replace(/ + /g, " ") + ' ';
+                            if (org && org.length > 0) org = ' ' + org + ' ';
 
-                        x.ids = ids;
-                        x.ascii = ascii;
-                        x.utf8 = utf8;
-                        x.org = org;
+                            x.ids = ids;
+                            x.ascii = ascii;
+                            x.utf8 = utf8;
+                            x.org = org;
+                        }
+                        
+                        if (cacheName_is_Index_J1n) {
+                            const id_1n = r[j1n_colums[index_j1n]];
+                            if (id_1n) {
+                                let ra1n = j1n[cache_name][id_1n];
+                                if (ra1n == null) {
+                                    j1n[cache_name][id_1n] = [];
+                                    ra1n = j1n[cache_name][id_1n];
+                                }
+                                ra1n.push(Number(r.id));
+
+                                //if (i == 0) {
+                                //    ___log_key('CACHE_JOIN_1N', cache_name + ' for_id = ', id_1n);
+                                //    ___log_key('CACHE_JOIN_1N', cache_name + ' r = ', r);
+                                //    ___log_key('CACHE_JOIN_1N', cache_name + ' j1n[' + i + '] = ', ra1n);
+                                //}
+                            }
+                        }
+
+                        if (is_cacheMaster && has_j1n) {
+                            j1n_cols.map((c_, i_) => {
+                                const j1n_for_ids = j1n[j1n_apis[i_]][r.id];
+                                if (j1n_for_ids) {
+                                    x[c_] = j1n_for_ids;
+                                } else x[c_] = [];
+
+                                if (i < 3) {
+                                    ___log_key('CACHE_JOIN_1N_TO_MASTER', c_, i_, j1n_for_ids, r.id);
+                                }
+                            });
+                        }
 
                         ex.push(x);
                         inx[cache_name][r.id] = r;
-
-                        if (index_j1n != -1) {
-                            if (j1n[cache_name][r[j1n_colums[index_j1n]]])
-                                j1n[cache_name][r[j1n_colums[index_j1n]]].push(r.id);
-                            else
-                                j1n[cache_name][r[j1n_colums[index_j1n]]] = [r.id];
-                        }
-                    }
+                    } // end foreach items
 
                     ext[cache_name] = ex;
                 }
@@ -378,8 +473,8 @@
 
         }
 
-        ___log_key('INDEX','Complete at ' + new Date().toLocaleString());
-    }; 
+        ___log_key('INDEX', 'Complete at ' + new Date().toLocaleString());
+    };
 
     //#endregion
 };
