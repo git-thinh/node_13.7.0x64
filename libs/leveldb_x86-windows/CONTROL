@@ -1,0 +1,7 @@
+Package: leveldb
+Version: 1.22-1
+Architecture: x86-windows
+Multi-Arch: same
+Abi: 5d6920b35be53ae98e7be546e580bad08d648f6c
+Description: LevelDB is a fast key-value storage library written at Google that provides an ordered mapping from string keys to string values.
+Type: Port

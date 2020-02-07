@@ -1,31 +1,25 @@
-#include <iostream>
 
+#include <iostream>
 #include <windows.h>
 
-/////////////////////////////////////////////////////////////////////////////////////////////
+#include "leveldb/db.h"
 
 #include <restbed>
+
 using namespace restbed;
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-
-#include "leveldb/db.h"
-leveldb::DB* db;
-leveldb::Options options;
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-
 using namespace std;
 
+leveldb::DB* db;
+leveldb::Options options;
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-//Bytes String::to_bytes(const string& value)
+//Bytes to_bytes(const string& value)
 //{
 //	return Bytes(value.begin(), value.end());
 //}
-//
-string String::to_string(const Bytes& value)
+
+string to_string2(const Bytes& value)
 {
 	return string(value.begin(), value.end());
 }
@@ -44,7 +38,7 @@ void post_method_handler(const shared_ptr< Session > session)
 			int size = (int)body.size();
 			string key = session->get_request()->get_query_parameter("key", "");
 			//const restbed::Byte* buf = body.data();
-			string value = String::to_string(body);
+			string value = to_string2(body);
 
 			//fprintf(stdout, "%.*s\n", size, buf);
 			std::cout << key << " = " << value << std::endl;

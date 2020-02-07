@@ -6,6 +6,14 @@ node --max-old-space-size=4096 db2txt.js
 
 .\txt2tcp.exe 1000
 
+
+.\vcpkg install leveldb:x86-windows
+.\vcpkg install restbed leveldb
+.\vcpkg export restbed leveldb --zip
+.\vcpkg export gtest zlib gtest:x64-windows zlib:x64-windows --nuget
+
+
+
 # https://github.com/coreybutler/node-windows
 
 npm install dotenv mssql cron body-parser express socket.io lodash node-fetch -S

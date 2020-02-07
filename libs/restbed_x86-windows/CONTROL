@@ -1,0 +1,8 @@
+Package: restbed
+Version: 4.16-07-28-2018-2
+Depends: asio[core]:x86-windows
+Architecture: x86-windows
+Multi-Arch: same
+Abi: c057bfea0692fa14d78c5e28de3d754521f341b4
+Description: Corvusoft's Restbed framework brings asynchronous RESTful functionality to C++11 applications.
+Type: Port
