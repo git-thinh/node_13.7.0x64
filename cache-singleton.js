@@ -464,11 +464,10 @@
                         if (is_cacheMaster && has_j1n) {
                             j1n_cols.map((c_, i_) => {
                                 const j1n_for_ids = j1n[j1n_apis[i_]][r.id];
-                                if (j1n_for_ids) {
-                                    x[c_ + '_id'] = j1n_for_ids;
-                                    x[c_] = j1n_for_ids.map((id_) => {
-                                        return inx[cache_name][id_];
-                                    });
+                                const j1n_for_apis = inx[j1n_apis[i_]];
+                                if (j1n_for_ids && j1n_for_apis) {
+                                    //x[c_ + '_id'] = j1n_for_ids;
+                                    x[c_] = j1n_for_ids.map((id_) => j1n_for_apis[id_]);
                                 } else x[c_] = [];
 
                                 if (i < 3) {
