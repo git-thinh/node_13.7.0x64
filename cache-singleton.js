@@ -255,14 +255,18 @@
     //#region [ TEST: SEACH DATA RAW, EXT ]
 
     this.f_search___test = function (type, cache_name) {
-        const is_raw = type && type.toUpperCase() == 'RAW';
+        let code = 'RAW';
+        if (type) code = type.toUpperCase().trim();
 
         let a = [];
-        if (is_raw && $.CACHE_DATA_RAW[cache_name])
-            a = $.CACHE_DATA_RAW[cache_name];
-        else if ($.CACHE_DATA_EXT[cache_name])
-            a = $.CACHE_DATA_EXT[cache_name];
-
+        switch (code) {
+            case 'RAW':
+                a = $.CACHE_DATA_RAW[cache_name];
+                break;
+            default:
+                a = $.CACHE_DATA_EXT[cache_name];
+                break;
+        }
         if (a.length > 0)
             a = _.filter(a, function (o_, i_) { return i_ < 10; });
 
@@ -270,15 +274,22 @@
     };
 
     this.f_search___test_id = function (type, cache_name, id) {
-        const is_raw = type && type.toUpperCase() == 'RAW';
+        let code = 'RAW';
+        if (type) code = type.toUpperCase().trim();
 
         let a = [];
-        if (is_raw && $.CACHE_DATA_RAW[cache_name])
-            a = $.CACHE_DATA_RAW[cache_name];
-        else if ($.CACHE_DATA_EXT[cache_name])
-            a = $.CACHE_DATA_EXT[cache_name];
+        switch (code) {
+            case 'RAW':
+                a = $.CACHE_DATA_RAW[cache_name];
+                break;
+            default:
+                a = $.CACHE_DATA_EXT[cache_name];
+                break;
+        }
 
-        if (id && id > 0 && a.length > 0)
+        let id_ = -1;
+        if (id != null) id_ = Number(id);
+        if (id_ > 0 && a.length > 0)
             a = _.filter(a, function (o_) { return o_.id == Number(id); });
 
         return a.length > 0 ? a[0] : {};
@@ -431,7 +442,7 @@
                             x.utf8 = utf8;
                             x.org = org;
                         }
-                        
+
                         if (cacheName_is_Index_J1n) {
                             const id_1n = r[j1n_colums[index_j1n]];
                             if (id_1n) {
@@ -454,11 +465,14 @@
                             j1n_cols.map((c_, i_) => {
                                 const j1n_for_ids = j1n[j1n_apis[i_]][r.id];
                                 if (j1n_for_ids) {
-                                    x[c_] = j1n_for_ids;
+                                    x[c_ + '_id'] = j1n_for_ids;
+                                    x[c_] = j1n_for_ids.map((id_) => {
+                                        return inx[cache_name][id_];
+                                    });
                                 } else x[c_] = [];
 
                                 if (i < 3) {
-                                    ___log_key('CACHE_JOIN_1N_TO_MASTER', c_, i_, j1n_for_ids, r.id);
+                                    ___log_key('CACHE_JOIN_1N_TO_MASTER', cache_name, c_, i_, j1n_for_ids, r.id);
                                 }
                             });
                         }

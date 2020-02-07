@@ -125,7 +125,7 @@
 
     _HTTP_APP.get('/view-data/:type/:cache_name', function (req, res) {
         const api = req.params.cache_name;
-        const type = req.params.type == 'RAW' ? 'RAW' : 'EXT';
+        const type = req.params.type;
         let a = [];
         if (api) a = $.CACHE_STORE.f_search___test(type, api.toUpperCase());
         res.json(a);
@@ -133,7 +133,7 @@
 
     _HTTP_APP.get('/view-data/:type/:cache_name/:id', function (req, res) {
         const api = req.params.cache_name;
-        const type = req.params.type == 'RAW' ? 'RAW' : 'EXT';
+        const type = req.params.type;
         const id = req.params.id;
         let o = {};
         if (api) o = $.CACHE_STORE.f_search___test_id(type, api.toUpperCase(), id);
