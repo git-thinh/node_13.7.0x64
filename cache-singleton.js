@@ -470,9 +470,7 @@
                                     x[c_] = j1n_for_ids.map((id_) => j1n_for_apis[id_]);
                                 } else x[c_] = [];
 
-                                if (i < 3) {
-                                    ___log_key('CACHE_JOIN_1N_TO_MASTER', cache_name, c_, i_, j1n_for_ids, r.id);
-                                }
+                                // if (i < 3) ___log_key('CACHE_JOIN_1N_TO_MASTER', cache_name, c_, i_, j1n_for_ids, r.id);
                             });
                         }
 
@@ -483,7 +481,6 @@
                     ext[cache_name] = ex;
                 }
             });
-
         }
 
         ___log_key('INDEX', 'Complete at ' + new Date().toLocaleString());
