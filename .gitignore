@@ -8,3 +8,8 @@
 /node_modules
 /leveldb/Release
 /leveldb/Debug
+/Release/leveldb.iobj
+/Release/leveldb.ipdb
+/Release/leveldb.pdb
+/Debug/leveldb.ilk
+/Debug/leveldb.pdb
