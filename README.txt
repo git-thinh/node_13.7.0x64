@@ -19,6 +19,24 @@ protoc.exe --grpc_out=. --plugin=protoc-gen-grpc=grpc_csharp_plugin.exe message.
 
 protoc.exe --cpp_out=message.proto
 
+
+
+npm install grpc
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # https://github.com/coreybutler/node-windows
 
 npm install dotenv mssql cron body-parser express socket.io lodash node-fetch -S
