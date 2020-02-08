@@ -13,3 +13,12 @@
 /Release/leveldb.pdb
 /Debug/leveldb.ilk
 /Debug/leveldb.pdb
+/libs/grpc_x86-windows/tools
+/libs/grpc_x86-windows/include
+/libs/grpc_x86-windows/lib
+/libs/grpc_x86-windows/share
+/libs/grpc_x86-windows/BUILD_INFO
+/libs/grpc_x86-windows/CONTROL
+/libs/grpc_x86-windows/debug
+/libs/openssl-windows_x86-windows/debug/html
+/libs/openssl-windows_x86-windows/html

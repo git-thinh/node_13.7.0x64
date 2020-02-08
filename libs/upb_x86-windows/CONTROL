@@ -1,0 +1,7 @@
+Package: upb
+Version: 2019-10-21-1
+Architecture: x86-windows
+Multi-Arch: same
+Abi: 440c167065e8e074e94f256262a6258994642c12
+Description: μpb (often written 'upb') is a small protobuf implementation written in C.
+Type: Port

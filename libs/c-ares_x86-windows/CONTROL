@@ -1,0 +1,7 @@
+Package: c-ares
+Version: 2019-5-2-1
+Architecture: x86-windows
+Multi-Arch: same
+Abi: 3eea6fe16d3ac9c405e25a8252747ffe8ce4dc48
+Description: A C library for asynchronous DNS requests
+Type: Port
