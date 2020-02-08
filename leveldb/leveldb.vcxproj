@@ -72,14 +72,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\NodeJS\node_13.7.0x64\libs\restbed_x86-windows\include;D:\NodeJS\node_13.7.0x64\libs\leveldb_x86-windows\include;D:\NodeJS\node_13.7.0x64\libs\asio_x86-windows\include;D:\NodeJS\node_13.7.0x64\libs\nlohmann-json_x86-windows\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\NodeJS\node_13.7.0x64\libs\leveldb_x86-windows\debug\lib;D:\NodeJS\node_13.7.0x64\libs\restbed_x86-windows\debug\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\NodeJS\node_13.7.0x64\libs\restbed_x86-windows\include;D:\NodeJS\node_13.7.0x64\libs\leveldb_x86-windows\include;D:\NodeJS\node_13.7.0x64\libs\asio_x86-windows\include;D:\NodeJS\node_13.7.0x64\libs\nlohmann-json_x86-windows\include;D:\NodeJS\node_13.7.0x64\libs\grpc_x86-windows\include;D:\NodeJS\node_13.7.0x64\libs\protobuf_x86-windows\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\NodeJS\node_13.7.0x64\libs\leveldb_x86-windows\debug\lib;D:\NodeJS\node_13.7.0x64\libs\restbed_x86-windows\debug\lib;D:\NodeJS\node_13.7.0x64\libs\protobuf_x86-windows\debug\lib;D:\NodeJS\node_13.7.0x64\libs\grpc_x86-windows\debug\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>D:\NodeJS\node_13.7.0x64\libs\leveldb_x86-windows\include;D:\NodeJS\node_13.7.0x64\libs\restbed_x86-windows\include;D:\NodeJS\node_13.7.0x64\libs\protobuf_x86-windows\include;D:\NodeJS\node_13.7.0x64\libs\grpc_x86-windows\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\NodeJS\node_13.7.0x64\libs\leveldb_x86-windows\lib;D:\NodeJS\node_13.7.0x64\libs\restbed_x86-windows\lib;D:\NodeJS\node_13.7.0x64\libs\protobuf_x86-windows\lib;D:\NodeJS\node_13.7.0x64\libs\grpc_x86-windows\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -90,13 +92,13 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_SCL_SECURE_NO_WARNINGS;_WIN32_WINNT=0x600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>leveldb.lib;restbed.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>leveldb.lib;restbed.lib;libprotobufd.lib;libprotobuf-lited.lib;libprotocd.lib;grpc++.lib;grpc++_unsecure.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -121,7 +123,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_SCL_SECURE_NO_WARNINGS;_WIN32_WINNT=0x600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -129,6 +131,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>leveldb.lib;restbed.lib;libprotobuf.lib;libprotobuf-lite.lib;libprotoc.lib;grpc++.lib;grpc++_unsecure.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -151,6 +154,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="leveldb.cpp" />
+    <ClCompile Include="message.grpc.pb.cc" />
+    <ClCompile Include="message.pb.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="message.grpc.pb.h" />
+    <ClInclude Include="message.pb.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

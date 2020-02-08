@@ -13,6 +13,11 @@ node --max-old-space-size=4096 db2txt.js
 .\vcpkg export gtest zlib gtest:x64-windows zlib:x64-windows --nuget
 
 
+protoc.exe --grpc_out=. --plugin=protoc-gen-grpc=grpc_cpp_plugin.exe message.proto
+protoc.exe --grpc_out=. --plugin=protoc-gen-grpc=grpc_node_plugin.exe message.proto
+protoc.exe --grpc_out=. --plugin=protoc-gen-grpc=grpc_csharp_plugin.exe message.proto
+
+protoc.exe --cpp_out=message.proto
 
 # https://github.com/coreybutler/node-windows
 
