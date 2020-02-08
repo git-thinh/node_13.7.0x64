@@ -315,7 +315,7 @@ int main(int argc, char** argv)
 	std::cout << "leveldb state = " << to_string(status.ok()) << std::endl;
 
 	grpc_Start();
-	httpServer_Start(argc, argv);
+	//httpServer_Start(argc, argv);
 
 	return EXIT_SUCCESS;
 }
