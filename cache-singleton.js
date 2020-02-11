@@ -2,7 +2,6 @@
     //#region [ VARIABLE ]
 
     const $ = this;
-
     const PORT = 1000;
 
     const SCOPE = 'CACHE';
@@ -10,12 +9,14 @@
     const ___log_key = (key, ...agrs) => { if ($.LOG) $.LOG.f_write('INFO', SCOPE, key, ...agrs); }
     const ___log_error = (key, ...agrs) => { if ($.LOG) $.LOG.f_write('ERR', SCOPE, key, ...agrs); }
 
-    const ___yyyyMMddHHmmss = () => new Date().toISOString().slice(-24).replace(/\D/g, '').slice(0, 8) + '_' + new Date().toTimeString().split(' ')[0].replace(/\D/g, '');
+    const ___yyyyMMddHHmmss = () => Number(new Date().toISOString().slice(-24).replace(/\D/g, '').slice(0, 8) + '' + new Date().toTimeString().split(' ')[0].replace(/\D/g, ''));
 
+    const _UUID = require('uuid');
     const _ = require('lodash');
-
     const _FS = require('fs');
     const _NET = require('net');
+    const { Worker, MessageChannel, workerData } = require('worker_threads');
+
     _NET.bytesWritten = Number.MAX_SAFE_INTEGER;
     _NET.bufferSize = Number.MAX_SAFE_INTEGER;
 
@@ -132,7 +133,7 @@
 
     //#endregion
 
-    //#region [ IS_BUSY, STATE, ON_READY, F_START ... ]
+    //#region [ F_START, IS_BUSY, STATE, ON_READY  ... ]
 
     this.IS_BUSY = false;
     this.STATE = 'NONE';
@@ -155,6 +156,7 @@
                 $.ADDRESS_PORT_UPDATE = _TCP_UPDATE.address();
                 console.log('TCP_CACHE_UPDATE: ', $.ADDRESS_PORT_UPDATE);
 
+                redis___Init();
                 on_ready($.ADDRESS_PORT_INIT, $.ADDRESS_PORT_UPDATE);
             });
         });
@@ -484,6 +486,98 @@
         }
 
         ___log_key('INDEX', 'Complete at ' + new Date().toLocaleString());
+    };
+
+    //#endregion
+
+    this.execute = (command, request, callback) => redis___sendMessage(command, request, callback);
+
+    //#region [ THREAD REDIS ]
+
+    let _REDIS_MSG_CALLBACK = {};
+
+    let _REDIS_WORKER;
+    let _REDIS_CONNECTED = false;
+    let _REDIS_SETTING = false;
+    let _REDIS_READY = _REDIS_CONNECTED && _REDIS_SETTING;
+
+    const redis___update_state = () => { _REDIS_READY = _REDIS_CONNECTED && _REDIS_SETTING; return _REDIS_READY; };
+
+    const redis___sendMessage = (command, request, callback) => {
+        if (_REDIS_READY) {
+            const m = redis___message_build(command, request, callback);
+            _REDIS_WORKER.postMessage(m);
+        } else {
+            callback({ ok: false, err: { message: 'Redis do not ready' }, cmd: command, message: { request: request } });
+        }
+    };
+
+    const redis___message_build = (command, request, callback) => {
+        const id = _UUID.v4();
+        const has_callback = callback != null && typeof callback == 'function';
+        if (callback) _REDIS_MSG_CALLBACK[id] = callback;
+
+        const m = { id: id, callback: has_callback, cmd: command, request: request };
+        return m;
+    };
+
+    const _REDIS_CHANNEL = new MessageChannel();
+    const redis___Init = () => {
+        _REDIS_WORKER = new Worker('./thread-redis.js', { workerData: {} });
+        _REDIS_WORKER.on('message', (m_) => { redis___on_message(m_); });
+        _REDIS_WORKER.postMessage({ cache_port: _REDIS_CHANNEL.port1 }, [_REDIS_CHANNEL.port1]);
+        _REDIS_CHANNEL.port2.on('message', (m_) => { redis___channel_on_message(m_); });
+    };
+
+    const redis___on_change_state = (isOnline) => {
+        _REDIS_CONNECTED = isOnline;
+        if (_REDIS_CONNECTED == true && _REDIS_SETTING == false) {
+            redis___set_config((m_) => {
+                ___log('CACHE_REDIS_SETTING', m_);
+            });
+        }
+        redis___update_state();
+    };
+
+    const redis___set_config = (callback) => {
+        const m = redis___message_build('SET_CONFIG', $.CACHE_SETTING, callback);
+        _REDIS_WORKER.postMessage(m);
+    };
+
+    const redis___on_message = (m_) => {
+        if (m_) {
+            switch (m_.cmd) {
+                case 'LOG':
+                    if (m_.data && $ && $.LOG)
+                        $.LOG.f_write_message(m_.data);
+                    break;
+            }
+        }
+    };
+
+    const redis___channel_on_message = (res) => {
+        console.log('REDIS->CACHE:', res);
+
+        if (res) {
+            if (typeof res == 'string') {
+                switch (res) {
+                    case 'REDIS_STATE_ON':
+                        redis___on_change_state(true);
+                        break;
+                    case 'REDIS_STATE_OFF':
+                        redis___on_change_state(false);
+                        break;
+                }
+            } else {
+                if (res.message) {
+                    const m = res.message;
+                    if (m.id && m.callback && typeof _REDIS_MSG_CALLBACK[m.id] == 'function') {
+                        _REDIS_MSG_CALLBACK[m.id](res);
+                        delete _REDIS_MSG_CALLBACK[m.id];
+                    }
+                }
+            }
+        }
     };
 
     //#endregion

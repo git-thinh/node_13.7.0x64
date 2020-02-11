@@ -22,6 +22,8 @@ protoc.exe --cpp_out=message.proto
 
 
 npm install grpc
+npm install redis
+npm install uuid
 
 
 

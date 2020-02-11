@@ -73,6 +73,14 @@
     };
 
     //--------------------------------------------------------------------------------------------
+    this.f_write_message = function (m) {
+        if (_ENABLE == false) return;
+
+        if (m && m.type == 'ERR')
+            _A_ERR.push(m);
+        else
+            _A_LOG.push(m);
+    };
 
     this.f_write = function (type, scope, key, ...agrs) {
         if (_ENABLE == false) return;
