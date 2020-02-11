@@ -513,7 +513,13 @@
     };
 
     const redis___message_build = (command, request, callback) => {
-        const id = _UUID.v4();
+        let id;
+
+        if (request && request.___api_id)
+            id = request.___api_id;
+        else
+            id = _UUID.v4();
+
         const has_callback = callback != null && typeof callback == 'function';
         if (callback) _REDIS_MSG_CALLBACK[id] = callback;
 

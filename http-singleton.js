@@ -2,7 +2,10 @@
     //#region [ VARIABLE ]
     const $ = this;
 
+    const _UUID = require('uuid');
     const _ = require('lodash');
+    const _PATH = require('path');
+    const _FS = require('fs');
 
     const PORT = 12345;
 
@@ -23,7 +26,6 @@
 
     //#region [ API SETUP ]
 
-    const _PATH = require('path');
     const _HTTP_EXPRESS = require('express');
     const _HTTP_BODY_PARSER = require('body-parser');
     const _HTTP_APP = _HTTP_EXPRESS();
@@ -45,6 +47,71 @@
         return next();
     });
 
+    //#endregion
+
+    //#region [ htdocs: /login /pawn-online ]
+
+    _HTTP_APP.get('/login', function (req, res) {
+        _FS.readFile('./htdocs/login.html', function read(err, data) {
+            res.setHeader('content-type', 'text/html');
+            if (err) {
+                res.send('');
+            } else {
+                res.send(data);
+            }
+        });
+    });
+
+    _HTTP_APP.get('/pawn-online', function (req, res) {
+        _FS.readFile('./htdocs/pawn-online.html', function read(err, data) {
+            res.setHeader('content-type', 'text/html');
+            if (err) {
+                res.send('');
+            } else {
+                res.send(data);
+            }
+        });
+    });
+
+    //#endregion
+
+    //#region [ POST: /api/message ]
+
+    const api___message_callback = (m) => {
+        //console.log('API___MESSAGE_CALLBACK: ', m);
+        if (m) {
+            if (m.message && m.message.request && m.message.request.___api_id) {
+                const id = m.message.request.___api_id;
+                if (_API_RES[id]) {
+                    _API_RES[id].json(m);
+                    _API_RES[id].end();
+                    delete _API_RES[id];
+                }
+            }
+        }
+    };
+     
+    const _API_RES = {};
+    _HTTP_APP.post('/api/message', function (req, res) {
+        let api = req.query.api;
+        if (api && api.length > 0) {
+            if ($.CACHE_STORE) {
+                let m = req.body;
+
+                const id = _UUID.v4();
+                if (m == null || m == undefined) m = {};
+                m.___api_id = id;
+
+                _API_RES[id] = res;
+                $.CACHE_STORE.execute(api, m, api___message_callback);
+            } else {
+                res.json({ ok: false, message: '$.CACHE_STORE is null' });
+            }
+        } else {
+            res.json({ ok: false, message: 'Cannot find ?api=' });
+        }
+    });
+    
     //#endregion
 
     //#region [ /info ]
