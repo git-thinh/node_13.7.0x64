@@ -78,7 +78,8 @@
     //#region [ POST: /api/message ]
 
     const api___message_callback = (m) => {
-        //console.log('API___MESSAGE_CALLBACK: ', m);
+        ___log('API___RESPONSE_CALLBACK: ', m);
+
         if (m) {
             if (m.message && m.message.request && m.message.request.___api_id) {
                 const id = m.message.request.___api_id;
@@ -100,6 +101,7 @@
 
                 const id = _UUID.v4();
                 if (m == null || m == undefined) m = {};
+                m.___api = api;
                 m.___api_id = id;
 
                 _API_RES[id] = res;

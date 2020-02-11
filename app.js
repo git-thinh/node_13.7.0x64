@@ -150,6 +150,10 @@ const ___CACHE_SETTING = {
         }
     },
     valid: {
+        ONLY_AZ09: {
+            func: '',
+            message: ''
+        },
         MAX_SIZE: {
 
         },
@@ -161,7 +165,26 @@ const ___CACHE_SETTING = {
         NOT_EQUAL_ZERO: {}
     },
     caption: {},
-    plugin: {
+    api: {
+        user___login: {
+            name: 'api/login',
+            title: 'Đăng nhập',
+            input: {
+                valid: {
+                    _: [
+                        { name: 'NOT_NULL', config: [] },
+                        { name: 'NOT_EMPTY', config: [] },
+                        { name: 'MAX_SIZE', config: [] }
+                    ],
+                    str_pass_word: [],
+                    str_user_name: [{ name: 'ONLY_AZ09', config: [] }]
+                },
+                data: {
+                    str_pass_word: '',
+                    str_user_name: ''
+                }
+            }
+        },
         notify___pushqueue: {
             command: {
                 title: 'Đẩy vào hàng đợi bắn notify'
@@ -268,7 +291,7 @@ let _HTTP_STORE = require('./http-singleton.js');
 
     _HTTP_STORE.LOG = _LOG;
     _HTTP_STORE.INFO = ___INFO;
-    _HTTP_STORE.CACHE_STORE = _CACHE_STORE; 
+    _HTTP_STORE.CACHE_STORE = _CACHE_STORE;
     _HTTP_STORE.CACHE_SETTING = ___CACHE_SETTING;
 })();
 
