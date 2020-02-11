@@ -20,8 +20,8 @@
         $.api___callback_by_id(api_id, m, true);
         return;
     }
-    
-    $.data_raw___filter(cache_name, function (o) { }, (err, results) => { 
+
+    $.data_raw___filter(cache_name, function (o) { return true; }, (err, results) => { 
         if (err) {
             m = { ok: false, error: { message: 'Lỗi đăng nhập khi kiểm tra tài khoản và mật khẩu', error: err }, header: { request: request } };
         } else {
