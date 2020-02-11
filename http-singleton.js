@@ -75,14 +75,14 @@
 
     //#endregion
 
-    //#region [ POST: /api/message ]
+    //#region [ POST: /api/cache ]
 
-    const api___message_callback = (m) => {
+    const api___cache_callback = (m) => {
         ___log('API___RESPONSE_CALLBACK: ', m);
 
         if (m) {
-            if (m.message && m.message.request && m.message.request.___api_id) {
-                const id = m.message.request.___api_id;
+            if (m.header && m.header.request && m.header.request.___api_id) {
+                const id = m.header.request.___api_id;
                 if (_API_RES[id]) {
                     _API_RES[id].json(m);
                     _API_RES[id].end();
@@ -93,7 +93,7 @@
     };
      
     const _API_RES = {};
-    _HTTP_APP.post('/api/message', function (req, res) {
+    _HTTP_APP.post('/api/cache', function (req, res) {
         let api = req.query.api;
         if (api && api.length > 0) {
             if ($.CACHE_STORE) {
@@ -105,9 +105,9 @@
                 m.___api_id = id;
 
                 _API_RES[id] = res;
-                $.CACHE_STORE.execute(api, m, api___message_callback);
+                $.CACHE_STORE.call_api(api, m, api___cache_callback);
             } else {
-                res.json({ ok: false, message: '$.CACHE_STORE is null' });
+                res.json({ ok: false, error: { message: '$.CACHE_STORE is null' } });
             }
         } else {
             res.json({ ok: false, message: 'Cannot find ?api=' });

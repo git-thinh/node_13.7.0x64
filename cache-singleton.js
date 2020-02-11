@@ -490,12 +490,52 @@
 
     //#endregion
 
-    this.execute = (command, request, callback) => redis___sendMessage(command, request, callback);
+    const API_CALLBACK = {};
+
+    this.api___callback_by_id = (id, data, is_remove) => {
+        if (API_CALLBACK[id]) API_CALLBACK[id](data);
+        if (is_remove == true) delete API_CALLBACK[id];
+    };
+
+    this.call_api = async (command, request, callback) => {
+        const url = request.___api;
+        const id = request.___api_id;
+        if (url && id) {
+            const a = url.split('/');
+            if (a.length == 2) {
+                API_CALLBACK[id] = callback;
+
+                const cache_name = a[0].toUpperCase();
+                const func_name = a[1];
+                const para_var = '_' + id.split('-').join('_');
+                const para = 'const ' + para_var + ' = ' + JSON.stringify(request) + '; ';
+
+                let f = _FS.readFileSync('api/user/login.js').toString('utf8');
+                f = f.trim();
+                f = para + f.substr(0, f.length - 3) + '("' + cache_name + '","' + func_name + '",' + para_var + ')';
+
+                //console.log(f);
+
+                eval(f);
+
+                //execute(command, request, callback);
+            }
+        }
+    };
+
+    this.data_raw___filter = (cache_name, f_condition, f_callback) => {
+        if ($.CACHE_DATA_RAW) {
+            const data = $.CACHE_DATA_RAW[cache_name];
+            const a = _.filter(data, f_condition);
+            f_callback(null, a);
+        } else
+            f_callback(null, []);
+    };
+
+    const execute = (command, request, callback) => redis___sendMessage(command, request, callback);
 
     //#region [ THREAD REDIS ]
-
-    let _REDIS_MSG_CALLBACK = {};
-
+     
     let _REDIS_WORKER;
     let _REDIS_CONNECTED = false;
     let _REDIS_SETTING = false;
@@ -514,14 +554,11 @@
 
     const redis___message_build = (command, request, callback) => {
         let id;
-
         if (request && request.___api_id)
             id = request.___api_id;
         else
             id = _UUID.v4();
-
         const has_callback = callback != null && typeof callback == 'function';
-        if (callback) _REDIS_MSG_CALLBACK[id] = callback;
 
         const m = { id: id, callback: has_callback, cmd: command, request: request };
         return m;
@@ -577,10 +614,7 @@
             } else {
                 if (res.message) {
                     const m = res.message;
-                    if (m.id && m.callback && typeof _REDIS_MSG_CALLBACK[m.id] == 'function') {
-                        _REDIS_MSG_CALLBACK[m.id](res);
-                        delete _REDIS_MSG_CALLBACK[m.id];
-                    }
+                    if (m.id && m.callback) $.api___callback_by_id(m.id, res, true);
                 }
             }
         }

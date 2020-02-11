@@ -165,99 +165,16 @@ const ___CACHE_SETTING = {
         NOT_EQUAL_ZERO: {}
     },
     caption: {},
-    api: {
-        user___login: {
-            name: 'api/login',
+    api: [
+        {
+            name: 'user/login',
             title: 'Đăng nhập',
-            input: {
-                valid: {
-                    _: [
-                        { name: 'NOT_NULL', config: [] },
-                        { name: 'NOT_EMPTY', config: [] },
-                        { name: 'MAX_SIZE', config: [] }
-                    ],
-                    str_pass_word: [],
-                    str_user_name: [{ name: 'ONLY_AZ09', config: [] }]
-                },
-                data: {
-                    str_pass_word: '',
-                    str_user_name: ''
-                }
-            }
-        },
-        notify___pushqueue: {
-            command: {
-                title: 'Đẩy vào hàng đợi bắn notify'
-            }
-        },
-        user___addnew: {
-            data: {
-                id: 'MAX___USER.id',
-                str_call_out_tooken: '',
-                int_approve_level: 1,
-                str_user_position: '0',
-                group_id: null,
-                str_user_name: 'hndd',
-                int_pol_status: 0,
-                int_pol_region: 0,
-                str_group_name: null,
-                str_full_name: 'F88 Đặng Dung',
-                str_pass_word: '12345@abc',
-                str_pass: '4QrcOUm6Wau+VuBX8g+IPg==',
-                str_possition: null,
-                shop_id: null,
-                str_shop_name: null,
-                bit_admin_caller: 0,
-                str_user_email: 'vuongthigiang@f88.vn',
-                int_dt_create: 'YYYYMMDDHHMMSS',
-                int_date_create: 'YYYYMMDD',
-                int_time_create: 'HHMMSS',
-                ___i: 0
-            },
-            valid: {
-                str_call_out_tooken: [
-                    { name: 'NOT_EMPTY', config: [] }
-                ],
-                int_approve_level: [
-                    { name: 'NOT_NULL', config: [] },
-                    { name: 'NOT_EQUAL_ZERO', config: [] },
-                    { name: 'MAX_SIZE', config: [30] }
-                ],
-                str_user_position: 'MAX_SIZE',
-                group_id: '',
-                str_user_name: 'hndd',
-                int_pol_status: '',
-                int_pol_region: '',
-                str_group_name: '',
-                str_full_name: '',
+            para: {
                 str_pass_word: '',
-                str_pass: '',
-                str_possition: '',
-                shop_id: '',
-                str_shop_name: '',
-                bit_admin_caller: '',
-                str_user_email: '',
-                ___i: 0
-            },
-            command: [
-                {
-                    name: 'notify___pushqueue',
-                    config: {}
-                }
-            ]
-        },
-        pol_pawn___addnew: {
-            data: {},
-            valid: {},
-            command: ''
-        },
-        pol_pawn___update: {},
-        pol_pawn___remove: {},
-        pol_customer___addnew: {},
-        pol_process___addnew: {},
-        pol_channel___addnew: {},
-        pol_notify___addnew: {}
-    }
+                str_user_name: ''
+            }
+        }
+    ]
 };
 
 const ___INFO = {
