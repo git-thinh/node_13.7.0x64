@@ -28,7 +28,7 @@
             if (results && results.length > 0) {
                 m = { ok: true, body: { data: results[0] }, header: { request: request }};
             } else {
-                m = { ok: false, error: { message: '222Vui lòng nhập chính xác thông tin tài khoản' }, header: { request: request } };
+                m = { ok: false, error: { message: 'Vui lòng nhập chính xác thông tin tài khoản' }, header: { request: request } };
             }
         }
         $.api___callback_by_id(api_id, m, true);
