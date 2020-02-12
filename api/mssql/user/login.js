@@ -8,9 +8,7 @@
     const str_user_name = request.str_user_name;
     const str_pass_word = request.str_pass_word;
     let m = null;
-
-    234'32d"sadsdasd
-
+     
     if (str_user_name === null || str_user_name.length < 5)
         m = { ok: false, error: { message: 'Tài khoản phải nhiều hơn 5 ký tự' }, header: { request: request } };
     if (m) {
@@ -70,10 +68,8 @@
     //// Execute SQL statement
     //connection.execSql(request);
 
-    $.log(api_id, request);
-    $.api___callback_by_id(api_id, { ok: false, error: { message: '???????????????' }, body: { data: [] }, header: { request: request } }, true);
-
-    return;
+    //$.log(api_id, request);
+    //$.api___callback_by_id(api_id, { ok: false, error: { message: '???????????????' }, body: { data: [] }, header: { request: request } }, true);
 
     $.api___search_raw_async(cache_name, { limit: 1 }, function (o) { return true; }).then(async (body1) => {
         if (body1 != null && Array.isArray(body1.indexs) && body1.indexs.length > 0) {
