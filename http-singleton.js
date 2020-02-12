@@ -153,6 +153,27 @@
 
     //#endregion
 
+    //#region [ /view-data/ raw | ext ]
+
+    _HTTP_APP.get('/view-data/:type/:cache_name', function (req, res) {
+        const api = req.params.cache_name;
+        const type = req.params.type;
+        let a = [];
+        if (api) a = $.CACHE_STORE.f_search___test(type, api.toUpperCase());
+        res.json(a);
+    });
+
+    _HTTP_APP.get('/view-data/:type/:cache_name/:id', function (req, res) {
+        const api = req.params.cache_name;
+        const type = req.params.type;
+        const id = req.params.id;
+        let o = {};
+        if (api) o = $.CACHE_STORE.f_search___test_id(type, api.toUpperCase(), id);
+        res.json(o);
+    });
+
+    //#endregion
+
     //#region [ /info ]
 
     _HTTP_APP.get('/info', function (req, res) {
@@ -224,27 +245,6 @@
     });
 
     //--------------------------------------------------
-
-    //#endregion
-
-    //#region [ /view-data/ raw | ext ]
-
-    _HTTP_APP.get('/view-data/:type/:cache_name', function (req, res) {
-        const api = req.params.cache_name;
-        const type = req.params.type;
-        let a = [];
-        if (api) a = $.CACHE_STORE.f_search___test(type, api.toUpperCase());
-        res.json(a);
-    });
-
-    _HTTP_APP.get('/view-data/:type/:cache_name/:id', function (req, res) {
-        const api = req.params.cache_name;
-        const type = req.params.type;
-        const id = req.params.id;
-        let o = {};
-        if (api) o = $.CACHE_STORE.f_search___test_id(type, api.toUpperCase(), id);
-        res.json(o);
-    });
 
     //#endregion
 

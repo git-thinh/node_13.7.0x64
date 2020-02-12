@@ -71,7 +71,10 @@
     //$.log(api_id, request);
     //$.api___callback_by_id(api_id, { ok: false, error: { message: '???????????????' }, body: { data: [] }, header: { request: request } }, true);
 
-    $.api___search_raw_async(cache_name, { limit: 1 }, function (o) { return true; }).then(async (body1) => {
+    $.api___search_raw_async(cache_name, { limit: 1 },
+        function (o_) {
+            return o_.str_user_name == str_user_name && o_.str_pass_word == str_pass_word;
+        }).then(async (body1) => {
         if (body1 != null && Array.isArray(body1.indexs) && body1.indexs.length > 0) {
             const index_ = body1.indexs[0];
             //$.log('LOGIN[2]', index_);
@@ -129,9 +132,9 @@
 
 
                 $.log('LOGIN[6]', request, user);
-                body1.data = user;
-                m = { ok: true, user_id: user.user_id, body: body1, header: { request: request } };
-                //m = { ok: false, error: { message: '??????????????' }, header: { request: request } };
+                //body1.data = user;
+                //m = { ok: true, user_id: user.user_id, body: body1, header: { request: request } };
+                m = { ok: true, v1: true, user_id: user.user_id, body: user, header: { request: request } };
             }
         } else {
             m = { ok: false, error: { message: 'Vui lòng nhập chính xác thông tin tài khoản' }, header: { request: request } };

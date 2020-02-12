@@ -258,51 +258,6 @@
 
     //#endregion
 
-    //#region [ TEST: SEACH DATA RAW, EXT ]
-
-    this.f_search___test = function (type, cache_name) {
-        let code = 'RAW';
-        if (type) code = type.toUpperCase().trim();
-
-        let a = [];
-        switch (code) {
-            case 'RAW':
-                a = $.CACHE_DATA_RAW[cache_name];
-                break;
-            default:
-                a = $.CACHE_DATA_EXT[cache_name];
-                break;
-        }
-        if (a.length > 0)
-            a = _.filter(a, function (o_, i_) { return i_ < 10; });
-
-        return a;
-    };
-
-    this.f_search___test_id = function (type, cache_name, id) {
-        let code = 'RAW';
-        if (type) code = type.toUpperCase().trim();
-
-        let a = [];
-        switch (code) {
-            case 'RAW':
-                a = $.CACHE_DATA_RAW[cache_name];
-                break;
-            default:
-                a = $.CACHE_DATA_EXT[cache_name];
-                break;
-        }
-
-        let id_ = -1;
-        if (id != null) id_ = Number(id);
-        if (id_ > 0 && a.length > 0)
-            a = _.filter(a, function (o_) { return o_.id == Number(id); });
-
-        return a.length > 0 ? a[0] : {};
-    };
-
-    //#endregion
-
     //#region [ INDEX ]
 
     const ___convert_unicode_to_ascii = function (str) {
@@ -418,6 +373,7 @@
 
                     for (i = 0; i < a.length; i++) {
                         r = a[i];
+                        r.index___ = i;
                         r.___i = i;
 
                         x = { ___i: i, id: r.id };
@@ -494,7 +450,52 @@
 
     //#endregion
 
-    //#region [ THREAD REDIS ]
+    //#region [ API TEST: SEACH DATA RAW, EXT ]
+
+    this.f_search___test = function (type, cache_name) {
+        let code = 'RAW';
+        if (type) code = type.toUpperCase().trim();
+
+        let a = [];
+        switch (code) {
+            case 'RAW':
+                a = $.CACHE_DATA_RAW[cache_name];
+                break;
+            default:
+                a = $.CACHE_DATA_EXT[cache_name];
+                break;
+        }
+        if (a.length > 0)
+            a = _.filter(a, function (o_, i_) { return i_ < 10; });
+
+        return a;
+    };
+
+    this.f_search___test_id = function (type, cache_name, id) {
+        let code = 'RAW';
+        if (type) code = type.toUpperCase().trim();
+
+        let a = [];
+        switch (code) {
+            case 'RAW':
+                a = $.CACHE_DATA_RAW[cache_name];
+                break;
+            default:
+                a = $.CACHE_DATA_EXT[cache_name];
+                break;
+        }
+
+        let id_ = -1;
+        if (id != null) id_ = Number(id);
+        if (id_ > 0 && a.length > 0)
+            a = _.filter(a, function (o_) { return o_.id == Number(id); });
+
+        return a.length > 0 ? a[0] : {};
+    };
+
+    //#endregion
+
+    //#region [ API ]
 
     const API_CALLBACK = {};
 
@@ -592,6 +593,18 @@
         }
         return null;
     };
+    this.api___get_raw_by_arr_indexs = (cache_name, arr_indexs) => {
+        if (arr_indexs == null || Array.isArray(arr_indexs) == false || arr_indexs.length == 0)
+            return [];
+
+        if ($.CACHE_DATA_RAW) {
+            const data = $.CACHE_DATA_RAW[cache_name];
+            if (data)
+                return _.map(arr_indexs, function (i_) { return data[i_]; });
+        }
+
+        return [];
+    };
 
     const ___get_all_raw = (cache_name, f_callback) => {
         try {
@@ -637,21 +650,22 @@
                 const data = $.CACHE_DATA_RAW[cache_name];
                 if (data) {
 
+                    let rs = [];
                     const a = [];
+                    let i = 0;
 
                     if (f_condition && typeof f_condition == 'function') {
-                        for (var i = 0; i < data.length; i++)
-                            a.push(data[i].___i);
-                    } else {
-                        for (var i = 0; i < data.length; i++)
+                        for (i = 0; i < data.length; i++)
                             if (f_condition(data[i]) == true)
                                 a.push(data[i].___i);
+                    } else {
+                        for (i = 0; i < data.length; i++)
+                            a.push(data[i].___i);
                     }
 
-                    let rs = [];
                     if (config && config.limit > 0 && a.length > 0) {
                         const max = a.length < config.limit ? a.length - 1 : config.limit;
-                        for (var i = 0; i < max; i++) rs.push(a[i]);
+                        for (i = 0; i < max; i++) rs.push(a[i]);
                     } else rs = a;
 
                     f_callback(null, { ok: true, data: null, indexs: rs, count: a.length, total: data.length });

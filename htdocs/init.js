@@ -80,7 +80,7 @@ const fetch___post = function (url, data) {
         const err_msg = j.error != null ? j.error.message : '';
         const req = j.header && j.header.request ? j.header.request : null;
         const result = j.body && j.body.data ? j.body.data : null;
-        const is_v1 = j.body && j.body.v1 == true;
+        const is_v1 = j.v1 == true;
         if (is_v1) {
             return j.body;
         } else {
@@ -121,6 +121,71 @@ const fetch___post = function (url, data) {
     ////////    return j;
     ////////});
 };
+
+
+var ___post_action = function (apiName, actionName, data) {
+
+    if (typeof data == 'string' || data == null
+        || actionName == null || actionName.length == 0
+        || apiName == null || apiName.length == 0) {
+        return new Promise((resolve, reject) => {
+            reject({ ok: false, message: 'Error: apiName, actionName, data not null' });
+        });
+    }
+
+    const url = 'api/' + apiName + '/' + actionName;
+
+    return fetch___post(url, data);
+
+    ////if (typeof data == 'string' && data.length > 3) data = data.substr(3);
+
+    ////var token = 'EB976D531188435EA006FCE8769C53D5';
+    ////var connectString = '123';
+
+
+    //////var url = 'http://127.0.0.1:3500/api/biz/' + connectString + '/' + apiName + '/' + actionName + '/' + token;
+    ////var url = _URI_API_BASE + 'biz/' + connectString + '/' + apiName + '/' + actionName + '/' + token;
+
+    ////url = url.toLowerCase();
+
+    ////const option = {
+    ////    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    ////    mode: 'cors', // no-cors, *cors, same-origin
+    ////    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    ////    credentials: 'same-origin', // include, *same-origin, omit
+    ////    headers: {
+    ////        'Content-Type': 'application/json'
+    ////        //'Content-Type': 'text/plain'
+    ////        // 'Content-Type': 'application/x-www-form-urlencoded',
+    ////    },
+    ////    redirect: 'follow', // manual, *follow, error
+    ////    referrer: 'no-referrer', // no-referrer, *client
+    ////    body: (typeof data == 'string' ? data : JSON.stringify(data)) // body data type must match "Content-Type" header
+    ////};
+
+    ////return fetch(url, option).then(res => res.json()).then(j => {
+
+    ////    if (j && j.ok) {
+    ////        if (j.message.length == 0) {
+    ////            j.message = "Thao tác thành công";
+    ////        }
+    ////    }
+    ////    if (j && j.ok == false) {
+    ////        if (j.message.length == 0) {
+    ////            j.message = "Thao tác thất bại...";
+    ////        }
+    ////    }
+
+    ////    var m_ = { Ok: j.ok, Message: j.message };
+    ////    for (var col in j) {
+    ////        if (col != 'ok' && col != 'message') {
+    ////            m_[col] = j[col];
+    ////        }
+    ////    }
+    ////    return m_;
+    ////});
+};
+
 
 var ___reload = function () { if (typeof _APP.___reload == 'function') _APP.___reload(); };
 
@@ -295,56 +360,56 @@ var jwtEncode = function (calloutId, ipphone, number) {
 
 //////////////////////////////////////////////////////////////////////////////
 
-var ___post_action = function (apiName, actionName, data) {
+//////var ___post_action = function (apiName, actionName, data) {
 
-    if (typeof data == 'string' && data.length > 3) data = data.substr(3);
+//////    if (typeof data == 'string' && data.length > 3) data = data.substr(3);
 
-    var token = 'EB976D531188435EA006FCE8769C53D5';
-    var connectString = '123';
+//////    var token = 'EB976D531188435EA006FCE8769C53D5';
+//////    var connectString = '123';
 
 
-    //var url = 'http://127.0.0.1:3500/api/biz/' + connectString + '/' + apiName + '/' + actionName + '/' + token;
-    var url = _URI_API_BASE + 'biz/' + connectString + '/' + apiName + '/' + actionName + '/' + token;
+//////    //var url = 'http://127.0.0.1:3500/api/biz/' + connectString + '/' + apiName + '/' + actionName + '/' + token;
+//////    var url = _URI_API_BASE + 'biz/' + connectString + '/' + apiName + '/' + actionName + '/' + token;
 
-    url = url.toLowerCase();
+//////    url = url.toLowerCase();
 
-    const option = {
-        method: 'POST', // *GET, POST, PUT, DELETE, etc.
-        mode: 'cors', // no-cors, *cors, same-origin
-        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'same-origin', // include, *same-origin, omit
-        headers: {
-            'Content-Type': 'application/json'
-            //'Content-Type': 'text/plain'
-            // 'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        redirect: 'follow', // manual, *follow, error
-        referrer: 'no-referrer', // no-referrer, *client
-        body: (typeof data == 'string' ? data : JSON.stringify(data)) // body data type must match "Content-Type" header
-    };
+//////    const option = {
+//////        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+//////        mode: 'cors', // no-cors, *cors, same-origin
+//////        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+//////        credentials: 'same-origin', // include, *same-origin, omit
+//////        headers: {
+//////            'Content-Type': 'application/json'
+//////            //'Content-Type': 'text/plain'
+//////            // 'Content-Type': 'application/x-www-form-urlencoded',
+//////        },
+//////        redirect: 'follow', // manual, *follow, error
+//////        referrer: 'no-referrer', // no-referrer, *client
+//////        body: (typeof data == 'string' ? data : JSON.stringify(data)) // body data type must match "Content-Type" header
+//////    };
 
-    return fetch(url, option).then(res => res.json()).then(j => {
+//////    return fetch(url, option).then(res => res.json()).then(j => {
 
-        if (j && j.ok) {
-            if (j.message.length == 0) {
-                j.message = "Thao tác thành công";
-            }
-        }
-        if (j && j.ok == false) {
-            if (j.message.length == 0) {
-                j.message = "Thao tác thất bại...";
-            }
-        }
+//////        if (j && j.ok) {
+//////            if (j.message.length == 0) {
+//////                j.message = "Thao tác thành công";
+//////            }
+//////        }
+//////        if (j && j.ok == false) {
+//////            if (j.message.length == 0) {
+//////                j.message = "Thao tác thất bại...";
+//////            }
+//////        }
 
-        var m_ = { Ok: j.ok, Message: j.message };
-        for (var col in j) {
-            if (col != 'ok' && col != 'message') {
-                m_[col] = j[col];
-            }
-        }
-        return m_;
-    });
-};
+//////        var m_ = { Ok: j.ok, Message: j.message };
+//////        for (var col in j) {
+//////            if (col != 'ok' && col != 'message') {
+//////                m_[col] = j[col];
+//////            }
+//////        }
+//////        return m_;
+//////    });
+//////};
 
 var ___getCurentDate = function (option) {
     var today = new Date();

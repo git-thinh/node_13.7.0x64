@@ -3,7 +3,7 @@ _DATA = {
     messages: [],
     login: {
         str_user_name: 'chintn',
-        str_pass_word: '12345'
+        str_pass_word: '12345@abc'
         //str_user_name: '',
         // call: chintn
         // call_bac:  yennh thuyntt1 haivt

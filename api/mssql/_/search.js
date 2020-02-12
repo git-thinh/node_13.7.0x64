@@ -3,45 +3,50 @@
     const scope = 'API___' + cache_name + '___' + func_name.toUpperCase();
     const api_id = request.___api_id;
     if (api_id == null) return;
-    $.log(scope, api_id, request);
+    //$.log(scope, api_id, request);
     //--------------------------------------------------------------------------------------------------------------- 
     let m = null;
+    let result, result_items;
+    let error_message = '';
+    const conditons = request.conditons;
+    const page_number = request.page_number;
+    const page_size = request.page_size;
 
-    const sql = {
-        POL_PAWN: [
-            { '62c325db-95ef-42da-af8d-c2b53d41d9fd': 1 },
-            { '62c325db-95ef-42da-af8d-c2b53d41d912': 2 }
-        ]
-    };
+    //if (conditons != null) {
 
-    const cache_template = {
-        POL_PAWN: [
-            { ___guid: '62c325db-95ef-42da-af8d-c2b53d41d9fd', id: 0, int_date_created: 20200212 },
-            { ___guid: '62c325db-95ef-42da-af8d-c2b53d41d912', id: 0, int_date_created: 20200212 },
-        ]
-    };
+    //$.log('SEARCH[0]', cache_name);
 
-    m = {
-        ok: true,
-        header: { request: request },
-        body: {
-            v1: true,
-            ok: true,
-            request: {
-                conditons: "function(o) { return true; }",
-                page_number: 1,
-                page_size: 15,
-                ___url: "/api/pol_pawn/search",
-                ___api: cache_name
-            },
-            total_items: 456912,
-            count_result: 0,
-            page_total: 0,
-            page_number: 1,
-            page_size: 15,
-            result_items: []
+    //if (cache_name == 'REGION')
+    //    $.log('SEARCH[1]', scope, api_id, request);
+
+    const para_var = '_' + api_id.split('-').join('_');
+    $.api___search_raw_async(cache_name, { limit: page_size },
+        eval('(function () { const ' + para_var + ' = ' + conditons + '; return ' + para_var + '; })()')
+        ////function (o_) { return true; }
+    ).then(body => {
+        $.log('SEARCH[2]', body);
+        if (body.indexs == null || body.indexs == 0) {
+            result_items = [];
+        } else {
+            result_items = $.api___get_raw_by_arr_indexs(cache_name, body.indexs);
         }
-    };
-
-    $.api___callback_by_id(api_id, m, true);;
+        m = {
+            ok: true,
+            v1: true,
+            header: { request: request },
+            body: {
+                ok: true,
+                request: request,
+                count_result: result_items.count,
+                page_total: result_items.total,
+                result_items: result_items
+            }
+        };
+        //$.log('SEARCH[2.OK]', m);
+        $.api___callback_by_id(api_id, m, true);
+    }).catch(err => {
+        //$.log('SEARCH[2.ERR]', err);
+        m = { ok: false, header: { request: request }, error: err };
+        $.api___callback_by_id(api_id, m, true);
+    });
 })

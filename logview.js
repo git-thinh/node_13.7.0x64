@@ -6,6 +6,17 @@ const server = dgram.createSocket('udp4');
 
 const MSG = [];
 
+let _KEY_WORD = '';
+process.argv.forEach((val, index) => {
+    //console.log(`${index}: ${val}`);
+    if (val.toLowerCase().endsWith(".js") && _KEY_WORD.length == 0) {
+        if (index < process.argv.length - 1) {
+            _KEY_WORD = process.argv[index + 1];
+        }
+    }
+});
+console.log('_KEY_WORD = ' + _KEY_WORD);
+
 server.on('listening', function () {
     var address = server.address();
     console.log('LOG listening on ' + address.address + ':' + address.port);
@@ -22,13 +33,18 @@ server.bind(PORT, HOST);
 
 const ___print = function () {
     if (MSG.length == 0) {
-        setTimeout(function () { ___print(); }, 500);
+        setTimeout(function () { ___print(); }, 100);
     } else {
         const buf = MSG.shift();
 
         const s = buf.toString('utf8');
-        console.log('\n');
 
+        if (_KEY_WORD.length > 0 && s.indexOf(_KEY_WORD) == -1) {
+            setTimeout(function () { ___print(); }, 100);
+            return;
+        }
+
+        console.log('\n');
         const j = JSON.parse(s);
         const type = j.type;
         const scope = j.scope;
@@ -49,7 +65,7 @@ const ___print = function () {
             });
         }
 
-        setTimeout(function () { ___print(); }, 300);
+        setTimeout(function () { ___print(); }, 1);
     }
 };
 ___print();
