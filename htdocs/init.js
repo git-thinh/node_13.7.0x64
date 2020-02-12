@@ -70,8 +70,9 @@ const fetch___post = function (url, data) {
         const err_msg = j.error != null ? j.error.message : '';
         const req = j.header && j.header.request ? j.header.request : null;
         const result = j.body && j.body.data ? j.body.data : null;
-        const m = { ok: j.ok, message: err_msg, request: req, data: result };
-        console.log('FETCH___POST= ', url, m);
+        const total = j.body && j.body.total ? j.body.total : 0;
+        const m = { ok: j.ok, message: err_msg, request: req, data: result, total: total};
+        console.log('FETCH___POST= ', url, j);
         return m;
     });
 

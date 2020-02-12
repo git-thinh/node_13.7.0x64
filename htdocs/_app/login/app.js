@@ -41,7 +41,7 @@ app___install = function () {
 
                         _STORE_USER.remove('PROFILE');
 
-                        fetch___post('user/login', _self.login).then(user_ => {
+                        fetch___post('api/mssql/user/login', _self.login).then(user_ => {
                             console.log('USER = ', user_);
                             if (user_ && user_.ok) {
 

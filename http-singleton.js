@@ -13,6 +13,7 @@
     const ___log = (...agrs) => { if ($.LOG) $.LOG.f_write('INFO', SCOPE, '', ...agrs); }
     const ___log_key = (key, ...agrs) => { if ($.LOG) $.LOG.f_write('INFO', SCOPE, key, ...agrs); }
     const ___log_error = (key, ...agrs) => { if ($.LOG) $.LOG.f_write('ERR', SCOPE, key, ...agrs); }
+    console.log = (...agrs) => ___log_key(SCOPE, ...agrs);
 
     const ___guid = function () {
         return 'id-xxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -78,7 +79,7 @@
     //#region [ POST: /api/cache ]
 
     const api___cache_callback = (m) => {
-        ___log('API___RESPONSE_CALLBACK: ', m);
+        console.log('API___RESPONSE_CALLBACK: ', m);
 
         if (m) {
             if (m.header && m.header.request && m.header.request.___api_id) {
@@ -105,7 +106,7 @@
                 m.___api_id = id;
 
                 _API_RES[id] = res;
-                $.CACHE_STORE.call_api(api, m, api___cache_callback);
+                $.CACHE_STORE.api___execute(m, api___cache_callback);
             } else {
                 res.json({ ok: false, error: { message: '$.CACHE_STORE is null' } });
             }
@@ -113,7 +114,12 @@
             res.json({ ok: false, message: 'Cannot find ?api=' });
         }
     });
-    
+
+    _HTTP_APP.get('/api/log/console/clear', function (req, res) {
+        if ($.LOG) $.LOG.f_console_clear();
+        res.end('OK');
+    });
+
     //#endregion
 
     //#region [ /info ]
@@ -313,62 +319,62 @@
         });
 
         _IO.on('connection', client => {
-            if (___CACHE_DONE == false) return;
+            ////////if (___CACHE_DONE == false) return;
 
-            //const c = client.handshake.headers.cookie;
-            //let uid = '';
-            //if (c && c.indexOf('user_id=') != -1) {
-            //    const pos = c.indexOf('user_id=') + 8;
-            //    uid = c.substr(pos, c.length - pos).split(';')[0].trim();
-            //}
-            //console.log(uid);
+            ////////const c = client.handshake.headers.cookie;
+            ////////let uid = '';
+            ////////if (c && c.indexOf('user_id=') != -1) {
+            ////////    const pos = c.indexOf('user_id=') + 8;
+            ////////    uid = c.substr(pos, c.length - pos).split(';')[0].trim();
+            ////////}
+            ////////console.log(uid);
 
-            let user_id;
+            //////let user_id;
 
-            client.on('push', data => {
-                //if (___CACHE_DONE == false) return;
+            //////client.on('push', data => {
+            //////    //if (___CACHE_DONE == false) return;
 
-                //if (user_id == null) ___users_socketio[data.id] = client;
-                //user_id = data.id;
+            //////    //if (user_id == null) ___users_socketio[data.id] = client;
+            //////    //user_id = data.id;
 
-                //if (___users_online[user_id] == null || ___users_online[user_id] == 0) {
-                //    ___users_online[user_id] = 1;
+            //////    //if (___users_online[user_id] == null || ___users_online[user_id] == 0) {
+            //////    //    ___users_online[user_id] = 1;
 
-                //    db___execute_callback(null, null, 'mobile.user_biz_update_user', {
-                //        user_id: user_id,
-                //        int_type: 1,
-                //        int_pol_status: data.status,
-                //        int_pol_region: 0,
-                //        int_user_create: user_id
-                //    }, function (m_) {
-                //    }, function (m_) {
-                //    });
-                //}
-            });
+            //////    //    db___execute_callback(null, null, 'mobile.user_biz_update_user', {
+            //////    //        user_id: user_id,
+            //////    //        int_type: 1,
+            //////    //        int_pol_status: data.status,
+            //////    //        int_pol_region: 0,
+            //////    //        int_user_create: user_id
+            //////    //    }, function (m_) {
+            //////    //    }, function (m_) {
+            //////    //    });
+            //////    //}
+            //////});
 
-            client.on('disconnect', (data) => {
-                //if (___CACHE_DONE == false) return;
+            //////client.on('disconnect', (data) => {
+            //////    //if (___CACHE_DONE == false) return;
 
-                //if (user_id != null && ___users_online[user_id] != null) {
-                //    //console.log('IO.CLOSE: ...11111111111111111111111111111111111', user_id, data);
+            //////    //if (user_id != null && ___users_online[user_id] != null) {
+            //////    //    //console.log('IO.CLOSE: ...11111111111111111111111111111111111', user_id, data);
 
-                //    ___users_online[user_id] = 0;
+            //////    //    ___users_online[user_id] = 0;
 
-                //    db___execute_callback(null, null, 'mobile.user_biz_update_user', {
-                //        user_id: user_id,
-                //        int_type: 1,
-                //        int_pol_status: 0,
-                //        int_pol_region: 0,
-                //        int_user_create: user_id
-                //    }, function (m_) {
-                //        //console.log('OK=', m_);
-                //    }, function (m_) {
-                //        //console.log('FAIL=', m_);
-                //    });
+            //////    //    db___execute_callback(null, null, 'mobile.user_biz_update_user', {
+            //////    //        user_id: user_id,
+            //////    //        int_type: 1,
+            //////    //        int_pol_status: 0,
+            //////    //        int_pol_region: 0,
+            //////    //        int_user_create: user_id
+            //////    //    }, function (m_) {
+            //////    //        //console.log('OK=', m_);
+            //////    //    }, function (m_) {
+            //////    //        //console.log('FAIL=', m_);
+            //////    //    });
 
-                //}
-                //if (___users_socketio[user_id]) ___users_socketio[user_id] == null;
-            });
+            //////    //}
+            //////    //if (___users_socketio[user_id]) ___users_socketio[user_id] == null;
+            //////});
         });
     };
 };

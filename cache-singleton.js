@@ -9,6 +9,9 @@
     const ___log_key = (key, ...agrs) => { if ($.LOG) $.LOG.f_write('INFO', SCOPE, key, ...agrs); }
     const ___log_error = (key, ...agrs) => { if ($.LOG) $.LOG.f_write('ERR', SCOPE, key, ...agrs); }
 
+    this.log = (...agrs) => ___log(...agrs);
+    this.log_key = (key, ...agrs) => log_key(key, ...agrs);
+
     const ___yyyyMMddHHmmss = () => Number(new Date().toISOString().slice(-24).replace(/\D/g, '').slice(0, 8) + '' + new Date().toTimeString().split(' ')[0].replace(/\D/g, ''));
 
     const _UUID = require('uuid');
@@ -99,6 +102,7 @@
             }
         });
     });
+
     _TCP_INIT.on('error', (err) => {
         $.IS_BUSY = false;
     });
@@ -490,52 +494,146 @@
 
     //#endregion
 
+    //#region [ THREAD REDIS ]
+
     const API_CALLBACK = {};
 
     this.api___callback_by_id = (id, data, is_remove) => {
+        //___log('API___CALLBACK_BY_ID', id, data);
+
         if (API_CALLBACK[id]) API_CALLBACK[id](data);
         if (is_remove == true) delete API_CALLBACK[id];
     };
 
-    this.call_api = async (command, request, callback) => {
+    this.api___execute = async (request, callback) => {
         const url = request.___api;
         const id = request.___api_id;
+
+        //___log_key('API___EXECUTE', url, id);
+
         if (url && id) {
             const a = url.split('/');
-            if (a.length == 2) {
-                API_CALLBACK[id] = callback;
+            if (a.length == 4) {
 
-                const cache_name = a[0].toUpperCase();
-                const func_name = a[1];
-                const para_var = '_' + id.split('-').join('_');
-                const para = 'const ' + para_var + ' = ' + JSON.stringify(request) + '; ';
+                const cache_name = a[2].toUpperCase();
+                const db_type = a[1];
+                const func_name = a[3];
+                let f = '';
 
-                let f = _FS.readFileSync('api/user/login.js').toString('utf8');
-                f = f.trim();
-                f = para + f.substr(0, f.length - 3) + '("' + cache_name + '","' + func_name + '",' + para_var + ')';
+                try {
+                    if (_FS.existsSync(url + '.js')) {
+                        const para_var = '_' + id.split('-').join('_');
+                        const para = 'const ' + para_var + ' = ' + JSON.stringify(request) + '; \r\n\r\n';
+
+                        f = _FS.readFileSync(url + '.js').toString('utf8');
+                        f = f.trim();
+                        f = f.substr(0, f.length - 3) + '("' + db_type + '","' + cache_name + '","' + func_name + '",' + para_var + ')';
+
+                        f = para + f;
+                    } else {
+                        const m = {
+                            ok: false,
+                            header: { request: request },
+                            error: { message: 'File [ ' + url + '.js ] không tồn tại' }
+                        };
+                        callback(m);
+                        return;
+                    }
+                } catch (e1) {
+                    const m = {
+                        ok: false,
+                        header: { request: request },
+                        error: { message: 'File [ ' + url + '.js ] không đọc được' }
+                    };
+                    callback(m);
+                    return;
+                }
 
                 //console.log(f);
 
-                eval(f);
-
-                //execute(command, request, callback);
+                API_CALLBACK[id] = callback;
+                try {
+                    eval(f);
+                } catch (e1) {
+                    const m = {
+                        ok: false,
+                        header: { request: request },
+                        error: { message: 'Lỗi khi thực hiện, Kiểm tra cú pháp các dòng lệnh trong file ' + url + '.js', err: e1 }
+                    };
+                    $.api___callback_by_id(id, m, true);
+                }
+            } else {
+                const m = {
+                    ok: false,
+                    header: { request: request },
+                    error: { message: 'Api [ ' + url + ' ] không đúng cấu trúc api/{db_type}/{cache_name}/{func_name}' }
+                };
+                callback(m);
             }
         }
     };
 
-    this.data_raw___filter = (cache_name, f_condition, f_callback) => {
+    this.api___get_raw_by_index = (cache_name, ___i) => {
         if ($.CACHE_DATA_RAW) {
             const data = $.CACHE_DATA_RAW[cache_name];
-            const a = _.filter(data, f_condition);
-            f_callback(null, a);
-        } else
-            f_callback(null, []);
+            if (data && data.length > ___i) return data[___i];
+        }
+
+        return null;
     };
+
+    this.api___search_raw = (cache_name, config, f_condition, f_callback) => {
+        try {
+            if ($.CACHE_DATA_RAW) {
+                const data = $.CACHE_DATA_RAW[cache_name];
+                if (data) {
+
+                    const a = [];
+
+                    if (f_condition && typeof f_condition == 'function') {
+                        for (var i = 0; i < data.length; i++)
+                            a.push(data[i].___i);
+                    } else {
+                        for (var i = 0; i < data.length; i++)
+                            if (f_condition(data[i]) == true)
+                                a.push(data[i].___i);
+                    }
+
+                    let rs = [];
+                    if (config && config.limit > 0 && a.length > 0) {
+                        const max = a.length < config.limit ? a.length - 1 : config.limit;
+                        for (var i = 0; i < max; i++) rs.push(a[i]);
+                    } else rs = a;
+
+                    f_callback(null, { data: null, indexs: rs, count: a.length, total: data.length });
+
+                } else
+                    f_callback({ message: 'Không tìm thấy dữ liệu cache của ' + cache_name });
+            } else
+                f_callback({ message: 'CACHE_DATA_RAW không tồn tại' });
+        } catch (e) {
+            f_callback({ message: 'Lỗi khi thực hiện tìm kiếm dối tượng RAW[ ' + cache_name + ' ]', err: e });
+        }
+    };
+
+    this.api___search_ext = (cache_name, f_condition, f_callback) => {
+        if ($.CACHE_DATA_EXT) {
+            const data = $.CACHE_DATA_EXT[cache_name];
+            if (data) {
+                const a = _.filter(data, f_condition);
+                f_callback(null, { data: a, total: data.length });
+            } else
+                f_callback({ message: 'Không tìm thấy dữ liệu cache của ' + cache_name });
+        } else
+            f_callback({ message: 'CACHE_DATA_EXT không tồn tại' });
+    };
+
+    //#endregion
+
+    //#region [ THREAD REDIS ]
 
     const execute = (command, request, callback) => redis___sendMessage(command, request, callback);
 
-    //#region [ THREAD REDIS ]
-     
     let _REDIS_WORKER;
     let _REDIS_CONNECTED = false;
     let _REDIS_SETTING = false;

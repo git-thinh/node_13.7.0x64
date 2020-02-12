@@ -28,7 +28,26 @@ const ___print = function () {
 
         const s = buf.toString('utf8');
         console.log('\n');
-        console.log(s);
+
+        const j = JSON.parse(s);
+        const type = j.type;
+        const scope = j.scope;
+        const key = j.key;
+        const time = j.time;
+        const logs = j.log;
+
+        if (logs.length == 1)
+            console.log('* ', scope, key, logs[0]);
+        else {
+            console.log('* ', scope, key);
+            logs.forEach(l => {
+                //if (typeof l == 'string' || typeof l == 'number') {
+                console.log('-> ', l);
+                //} else {
+                //    console.log('-> ' + JSON.stringify(l));
+                //}
+            });
+        }
 
         setTimeout(function () { ___print(); }, 300);
     }
