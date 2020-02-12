@@ -20,7 +20,7 @@ protoc.exe --grpc_out=. --plugin=protoc-gen-grpc=grpc_csharp_plugin.exe message.
 protoc.exe --cpp_out=message.proto
 
 
-
+npm install cookie-parser
 npm install grpc
 npm install redis
 npm install uuid

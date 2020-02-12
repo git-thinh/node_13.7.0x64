@@ -9,8 +9,6 @@
     const str_pass_word = request.str_pass_word;
     let m = null;
 
-    234'32d"sadsdasd
-
     if (str_user_name === null || str_user_name.length < 5)
         m = { ok: false, error: { message: 'Tài khoản phải nhiều hơn 5 ký tự' }, header: { request: request } };
     if (m) {
@@ -34,19 +32,19 @@
     };
 
 
-    ////m = { ok: false, error: { message: 'Tài khoản phải nhiều hơn 5 ký tự' }, header: { request: request } };
-    //const _DB_CACHE_123 = {
-    //    user: 'sa',
-    //    password: 'dev@123',
-    //    server: '192.168.10.54',
-    //    database: 'POL_20191230',
-    //    connectionTimeout: 300000,
-    //    requestTimeout: 300000,
-    //    pool: {
-    //        idleTimeoutMillis: 300000,
-    //        max: 100
-    //    }
-    //};
+    //m = { ok: false, error: { message: 'Tài khoản phải nhiều hơn 5 ký tự' }, header: { request: request } };
+    const _DB_CACHE_123 = {
+        user: 'sa',
+        password: 'dev@123',
+        server: '192.168.10.54',
+        database: 'POL_20191230',
+        connectionTimeout: 300000,
+        requestTimeout: 300000,
+        pool: {
+            idleTimeoutMillis: 300000,
+            max: 100
+        }
+    };
 
     //const _SQL = require('mssql');
 
@@ -107,13 +105,13 @@
                     }
                 }
                 user.pos_sys_config = cf;
-                 
+
                 const token = user.user_id + '12345xxxxxx4xxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxx4xxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxx4xxxxyxxxxxxxxxxxxxxxxxxxxxxxxxxx4xxxxyxxxxxxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
                     var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
                     return v.toString(16);
                 });
                 user.str_token = token;
-                 
+
 
                 let scopes = [];
                 if (user.scope_ids) {

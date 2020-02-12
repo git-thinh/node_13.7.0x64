@@ -1,4 +1,6 @@
 ﻿let httpSingleton = function httpSingleton() {
+    const _API_URI_START = '/pol/api';
+
     //#region [ VARIABLE ]
     const $ = this;
 
@@ -29,14 +31,16 @@
 
     const _HTTP_EXPRESS = require('express');
     const _HTTP_BODY_PARSER = require('body-parser');
+    const _HTTP_COOKIE_PARSER = require('cookie-parser');
     const _HTTP_APP = _HTTP_EXPRESS();
 
     const _HTTP_SERVER = require('http').createServer(_HTTP_APP);
     const _IO = require('socket.io')(_HTTP_SERVER);
 
     //--------------------------------------------------------------------------------------------    
-    _HTTP_APP.use(_HTTP_EXPRESS.static(_PATH.join(__dirname, 'htdocs')));
 
+    _HTTP_APP.use(_HTTP_EXPRESS.static(_PATH.join(__dirname, 'htdocs')));
+    _HTTP_APP.use(_HTTP_COOKIE_PARSER());
     _HTTP_APP.use(_HTTP_BODY_PARSER.json());
     _HTTP_APP.use((error, req, res, next) => {
         if ($.CACHE_STORE.IS_BUSY) {
@@ -76,7 +80,16 @@
 
     //#endregion
 
-    //#region [ POST: /api/cache ]
+    //#region [ API: /api-execute /api/:cache_name/all ]
+
+    const http___cookie_get_user_id = (req) => {
+        let user_id = 0;
+        if (req.cookies) {
+            const ___user_id = req.cookies.___user_id;
+            if (___user_id != null && ___user_id != undefined) user_id = Number(___user_id);
+        }
+        return user_id;
+    };
 
     const api___cache_callback = (m) => {
         console.log('API___RESPONSE_CALLBACK: ', m);
@@ -85,25 +98,31 @@
             if (m.header && m.header.request && m.header.request.___api_id) {
                 const id = m.header.request.___api_id;
                 if (_API_RES[id]) {
-                    _API_RES[id].json(m);
-                    _API_RES[id].end();
+                    const res = _API_RES[id];
+                    if (m && m.ok == true && m.user_id) 
+                        res.cookie('___user_id', m.user_id, { maxAge: 900000, httpOnly: true }); 
+                    res.json(m);
+                    res.end();
                     delete _API_RES[id];
                 }
             }
         }
     };
-     
+
     const _API_RES = {};
-    _HTTP_APP.post('/api/cache', function (req, res) {
+    _HTTP_APP.post(_API_URI_START + '-execute', function (req, res) {
         let api = req.query.api;
         if (api && api.length > 0) {
             if ($.CACHE_STORE) {
                 let m = req.body;
+                if (m == null || m == undefined) m = {};
+
+                m.___user_id = http___cookie_get_user_id(req);
+                m.___api = api;
 
                 const id = _UUID.v4();
-                if (m == null || m == undefined) m = {};
-                m.___api = api;
-                m.___api_id = id;
+                if (m.___api_id == null) m.___api_id = id;
+                else id = m.___api_id;
 
                 _API_RES[id] = res;
                 $.CACHE_STORE.api___execute(m, api___cache_callback);
@@ -115,9 +134,21 @@
         }
     });
 
-    _HTTP_APP.get('/api/log/console/clear', function (req, res) {
+    _HTTP_APP.get(_API_URI_START + '/log/console/clear', function (req, res) {
         if ($.LOG) $.LOG.f_console_clear();
         res.end('OK');
+    });
+
+    _HTTP_APP.get(_API_URI_START + '/:cache_name/all', function (req, res) {
+        const cache_name = req.params.cache_name.toUpperCase();
+        $.CACHE_STORE.api___get_all_raw_ext_async(cache_name).then(body => {
+            const data = body.data;
+            if (data == null) data = [];
+            const len = data.length;
+            res.json({ ok: true, request: {}, total_items: len, count_result: len, result_items: data });
+        }).catch(err => {
+            res.json({ ok: false, message: err.message });
+        });
     });
 
     //#endregion
@@ -277,15 +308,7 @@
     });
 
     //#endregion
-
-    //#region [ API ]
-
-    _HTTP_APP.post('/api/cache-execute', function (req, res) {
-        res.json({ ok: true, time: new Date() });
-    });
-
-    //#endregion
-
+     
     //--------------------------------------------------------------------------------------------
 
     const on_ready = function (add_port_api) {

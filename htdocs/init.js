@@ -48,7 +48,17 @@ const fetch___post = function (url, data) {
     //if (url.indexOf('http') != 0) url = _URI_API_BASE + url;
     //console.log('POST: ', url, data);
 
-    const uri = '/api/cache?api=' + url;
+    if (url == null || url.length == 0) {
+        return new Promise((resolve, reject) => {
+            reject({ ok: false, message: 'Url not null or emtpy' });
+        }); 
+    }
+
+    if (url[0] == '/') url = url.substr(1);
+
+    if (url.split('/')[0] == 'api') url = 'mssql/' + url;
+
+    const uri = '/pol/api-execute?api=' + url;
 
     const option = {
         url: uri,
@@ -70,10 +80,15 @@ const fetch___post = function (url, data) {
         const err_msg = j.error != null ? j.error.message : '';
         const req = j.header && j.header.request ? j.header.request : null;
         const result = j.body && j.body.data ? j.body.data : null;
-        const total = j.body && j.body.total ? j.body.total : 0;
-        const m = { ok: j.ok, message: err_msg, request: req, data: result, total: total};
-        console.log('FETCH___POST= ', url, j);
-        return m;
+        const is_v1 = j.body && j.body.v1 == true;
+        if (is_v1) {
+            return j.body;
+        } else {
+            const total = j.body && j.body.total ? j.body.total : 0;
+            const m = { ok: j.ok, message: err_msg, request: req, data: result, total: total };
+            console.log('FETCH___POST= ', url, j);
+            return m;
+        }
     });
 
     //return new Promise((resolve, reject) => {

@@ -506,35 +506,47 @@
     };
 
     this.api___execute = async (request, callback) => {
-        const url = request.___api;
+        if (request == null) request = {};
+        request.___api_alias = false;
         const id = request.___api_id;
 
         //___log_key('API___EXECUTE', url, id);
 
-        if (url && id) {
-            const a = url.split('/');
+        if (request.___api && id) {
+            const a = request.___api.split('/');
             if (a.length == 4) {
 
                 const cache_name = a[2].toUpperCase();
-                const db_type = a[1];
+                const db_type = a[0];
                 const func_name = a[3];
                 let f = '';
+                const url = 'api/' + db_type + '/' + cache_name + '/' + func_name + '.js';
+                let url_alias = '';
 
                 try {
-                    if (_FS.existsSync(url + '.js')) {
+                    let exist = _FS.existsSync(url);
+                    if (exist == false) {
+                        url_alias = 'api/' + db_type + '/_/' + func_name + '.js';
+                        exist = _FS.existsSync(url_alias);
+                        if (exist) {
+                            request.___api_alias = true;
+                            f = _FS.readFileSync(url_alias).toString('utf8').trim();
+                        }
+                    } else {
+                        f = _FS.readFileSync(url).toString('utf8').trim();
+                    }
+
+                    if (exist) {
                         const para_var = '_' + id.split('-').join('_');
                         const para = 'const ' + para_var + ' = ' + JSON.stringify(request) + '; \r\n\r\n';
 
-                        f = _FS.readFileSync(url + '.js').toString('utf8');
-                        f = f.trim();
-                        f = f.substr(0, f.length - 3) + '("' + db_type + '","' + cache_name + '","' + func_name + '",' + para_var + ')';
-
+                        f = f + '("' + db_type + '","' + cache_name + '","' + func_name + '",' + para_var + ')';
                         f = para + f;
                     } else {
                         const m = {
                             ok: false,
                             header: { request: request },
-                            error: { message: 'File [ ' + url + '.js ] không tồn tại' }
+                            error: { message: 'File [ ' + url + '.js | ' + url_alias + ' ] không tồn tại' }
                         };
                         callback(m);
                         return;
@@ -543,7 +555,7 @@
                     const m = {
                         ok: false,
                         header: { request: request },
-                        error: { message: 'File [ ' + url + '.js ] không đọc được' }
+                        error: { message: 'File [ ' + url + '.js | ' + url_alias + ' ] không đọc được' }
                     };
                     callback(m);
                     return;
@@ -578,11 +590,48 @@
             const data = $.CACHE_DATA_RAW[cache_name];
             if (data && data.length > ___i) return data[___i];
         }
-
         return null;
     };
 
-    this.api___search_raw = (cache_name, config, f_condition, f_callback) => {
+    const ___get_all_raw = (cache_name, f_callback) => {
+        try {
+            if ($.CACHE_DATA_RAW) {
+                const data = $.CACHE_DATA_RAW[cache_name];
+                if (data) {
+                    f_callback(null, { ok: true, data: data, indexs: [], count: data.length, total: data.length });
+                } else
+                    f_callback({ message: 'Không tìm thấy dữ liệu cache của ' + cache_name });
+            } else
+                f_callback({ message: 'CACHE_DATA_RAW không tồn tại' });
+        } catch (e) {
+            f_callback({ message: 'Lỗi khi thực hiện tìm kiếm dối tượng RAW[ ' + cache_name + ' ]', err: e });
+        }
+    };
+    this.api___get_all_raw = (cache_name, f_callback) => ___get_all_raw(cache_name, f_callback);
+    this.api___get_all_raw_ext_async = (cache_name) => {
+        return new Promise((resolve, reject) => {
+            ___get_all_raw(cache_name, (err, body) => {
+                if (err != null) {
+                    reject(err);
+                } else {
+                    resolve(body);
+                }
+            });
+        });
+    };
+    this.api___get_all_raw_async = (cache_name) => {
+        return new Promise((resolve, reject) => {
+            ___get_all_raw(cache_name, (err, body) => {
+                if (err != null) {
+                    reject(err);
+                } else {
+                    resolve(body);
+                }
+            });
+        });
+    };
+
+    const ___search_raw = (cache_name, config, f_condition, f_callback) => {
         try {
             if ($.CACHE_DATA_RAW) {
                 const data = $.CACHE_DATA_RAW[cache_name];
@@ -605,7 +654,7 @@
                         for (var i = 0; i < max; i++) rs.push(a[i]);
                     } else rs = a;
 
-                    f_callback(null, { data: null, indexs: rs, count: a.length, total: data.length });
+                    f_callback(null, { ok: true, data: null, indexs: rs, count: a.length, total: data.length });
 
                 } else
                     f_callback({ message: 'Không tìm thấy dữ liệu cache của ' + cache_name });
@@ -614,6 +663,18 @@
         } catch (e) {
             f_callback({ message: 'Lỗi khi thực hiện tìm kiếm dối tượng RAW[ ' + cache_name + ' ]', err: e });
         }
+    };
+    this.api___search_raw = (cache_name, config, f_condition, f_callback) => ___search_raw(cache_name, config, f_condition, f_callback);
+    this.api___search_raw_async = (cache_name, config, f_condition) => {
+        return new Promise((resolve, reject) => {
+            ___search_raw(cache_name, config, f_condition, (err, body) => {
+                if (err != null) {
+                    reject(err);
+                } else {
+                    resolve(body);
+                }
+            });
+        });
     };
 
     this.api___search_ext = (cache_name, f_condition, f_callback) => {

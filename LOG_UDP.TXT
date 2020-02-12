@@ -1,0 +1,20 @@
+
+const ___log_post_api = (...agrs) => _A_LOG.push({ key: 'POST_API', log: agrs });
+const ___log = (...agrs) => _A_LOG.push({ key: 'INFO', log: agrs });
+const ___log_tcp = (...agrs) => _A_LOG.push({ key: 'TCP_MSG', log: agrs });
+const _A_LOG = [];
+let _UDP_LOG = ['127.0.0.1', 2020, false];
+new _JOB('* * * * * *', function () {
+    if (_A_LOG.length > 0) {
+        if (_UDP_LOG == null || _UDP_LOG.length < 2 || _UDP_LOG[2] == false) return;
+
+        const m = _A_LOG.shift();
+
+        var buf = Buffer.from(JSON.stringify(m));
+        const udp = _DGRAM.createSocket('udp4');
+        udp.send(buf, 0, buf.length, _UDP_LOG[1], _UDP_LOG[0], (err) => {
+            // Send success
+            udp.close();
+        });
+    }
+}).start();

@@ -165,16 +165,16 @@ const ___CACHE_SETTING = {
         NOT_EQUAL_ZERO: {}
     },
     caption: {},
-    api: [
-        {
-            name: 'user/login',
-            title: 'Đăng nhập',
-            para: {
-                str_pass_word: '',
-                str_user_name: ''
+    api_test: [1, 1106],
+    api: {
+        POL_PAWN: {
+            data: {
+                ___guid: '[GUID]',
+                id: 0,
+                int_date_created: 'yyyyMMdd'
             }
         }
-    ]
+    }
 };
 
 const ___INFO = {
