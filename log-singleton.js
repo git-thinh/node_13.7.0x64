@@ -13,10 +13,10 @@
     let _MAX_SIZE = 1000;
     let _ENABLE = false;
 
-    let _BROAD_CAST_ALL = false;
+    let _BROAD_CAST_ALL = true;
 
-    let _UDP_LOG = ['127.0.0.1', 2020, false];
-    let _UDP_ERROR = ['127.0.0.1', 2121, false];
+    let _UDP_LOG = ['127.0.0.1', 2020, true];
+    let _UDP_ERROR = ['127.0.0.1', 2121, true];
 
     let _BROADCAST_KEYS = [];
 
@@ -54,7 +54,7 @@
 
     this.f_setup_update = function () {
 
-        if ($.CACHE_SETTING.log) {
+        if ($.CACHE_SETTING && $.CACHE_SETTING.log) {
             if ($.CACHE_SETTING.log.max_size) _MAX_SIZE = $.CACHE_SETTING.log.max_size;
             if ($.CACHE_SETTING.log.enable) _ENABLE = $.CACHE_SETTING.log.enable == true ? true : false;
 
@@ -69,7 +69,7 @@
             }
         }
 
-        if (_MAX_SIZE < 100) _MAX_SIZE = 100;
+        if (_MAX_SIZE < 1000) _MAX_SIZE = 1000;
     };
 
     //--------------------------------------------------------------------------------------------
@@ -161,6 +161,8 @@
 
             if (_BROAD_CAST_ALL) send = true;
             else if (_BROADCAST_KEYS.indexOf(m.key) != 1) send = true;
+
+            console.log('LOG = ', send, m);
 
             if (send) {
                 var buf = Buffer.from(JSON.stringify(m));
