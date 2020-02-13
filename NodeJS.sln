@@ -48,25 +48,6 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "grpc_nodejs", "..\grpc_node
 		VWDPort = "54900"
 		SlnRelativePath = "..\grpc_nodejs\"
 	EndProjectSection
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_54900"
-		Debug.AspNetCompiler.PhysicalPath = "..\grpc_nodejs\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_54900\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_54900"
-		Release.AspNetCompiler.PhysicalPath = "..\grpc_nodejs\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_54900\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "54900"
-		SlnRelativePath = "..\grpc_nodejs\"
-	EndProjectSection
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "redis_nodejs", "..\redis_nodejs\", "{B60773AF-59C8-4D75-8615-BADD32E5E003}"
 	ProjectSection(WebsiteProperties) = preProject
@@ -108,6 +89,27 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "F88.Mobility.Ids", "..\F88\
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "63588"
 		SlnRelativePath = "..\F88\F88.Mobility.Ids\"
+	EndProjectSection
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "F88.Mobility.Login", "..\F88\F88.Mobility.Login\", "{EA60A396-F05B-4C90-A890-395B7C30790F}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_60053"
+		Debug.AspNetCompiler.PhysicalPath = "..\F88\F88.Mobility.Login\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_60053\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_60053"
+		Release.AspNetCompiler.PhysicalPath = "..\F88\F88.Mobility.Login\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_60053\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "60053"
+		SlnRelativePath = "..\F88\F88.Mobility.Login\"
 	EndProjectSection
 EndProject
 Global
@@ -190,6 +192,18 @@ Global
 		{ECAF97E7-9863-4F3E-BAD3-7F3A0ECFB00A}.Release|x64.Build.0 = Debug|Any CPU
 		{ECAF97E7-9863-4F3E-BAD3-7F3A0ECFB00A}.Release|x86.ActiveCfg = Debug|Any CPU
 		{ECAF97E7-9863-4F3E-BAD3-7F3A0ECFB00A}.Release|x86.Build.0 = Debug|Any CPU
+		{EA60A396-F05B-4C90-A890-395B7C30790F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA60A396-F05B-4C90-A890-395B7C30790F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA60A396-F05B-4C90-A890-395B7C30790F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EA60A396-F05B-4C90-A890-395B7C30790F}.Debug|x64.Build.0 = Debug|Any CPU
+		{EA60A396-F05B-4C90-A890-395B7C30790F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EA60A396-F05B-4C90-A890-395B7C30790F}.Debug|x86.Build.0 = Debug|Any CPU
+		{EA60A396-F05B-4C90-A890-395B7C30790F}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA60A396-F05B-4C90-A890-395B7C30790F}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{EA60A396-F05B-4C90-A890-395B7C30790F}.Release|x64.ActiveCfg = Debug|Any CPU
+		{EA60A396-F05B-4C90-A890-395B7C30790F}.Release|x64.Build.0 = Debug|Any CPU
+		{EA60A396-F05B-4C90-A890-395B7C30790F}.Release|x86.ActiveCfg = Debug|Any CPU
+		{EA60A396-F05B-4C90-A890-395B7C30790F}.Release|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
