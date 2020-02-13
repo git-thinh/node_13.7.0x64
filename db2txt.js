@@ -1,6 +1,6 @@
 ﻿const ___log = (...agrs) => console.log('DB: ', ...agrs);
 
-const _sql_select_top = ''; //top 1000  
+const _sql_select_top = 'top 1000'; //  
 const ___CACHE_SETTING = {
     connect_string: {
         db_123: {

@@ -2,7 +2,6 @@
 const ___CACHE_DATA_EXT = {};
 const ___CACHE_INDEX = {};
 const ___CACHE_JOIN_1N = {};
-
 const ___CACHE_SETTING = {
     log: {
         enable: true,

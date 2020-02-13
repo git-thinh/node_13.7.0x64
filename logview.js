@@ -53,12 +53,12 @@ const ___print = function () {
         const logs = j.log;
 
         if (logs.length == 1)
-            console.log('* ', scope, key, logs[0]);
+            console.log(' * ', scope, key, logs[0]);
         else {
-            console.log('* ', scope, key);
+            console.log(' * ', scope, key);
             logs.forEach(l => {
                 //if (typeof l == 'string' || typeof l == 'number') {
-                console.log('-> ', l);
+                console.log(' -> ', l);
                 //} else {
                 //    console.log('-> ' + JSON.stringify(l));
                 //}
